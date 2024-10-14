@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
     <title>Todora - Task Management</title>
 </head>
 <body class="bg-base-100 text-base-content">
@@ -28,55 +26,139 @@
                         </div>
                     </div>
                 </div>
-                <!-- Calendar Section with FullCalendar Integration -->
-                <div class="card bg-base-100 shadow-xl mb-8">
-                    <div class="card-body">
-                        <h3 class="card-title">Calendar</h3>
-                        <div id="calendar" class="mt-4"></div>
-                    </div>
-                </div>
-                <!-- Tasks and Quotes -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="card bg-base-100 shadow-xl">
+
+                <!-- Calendar and Daily Quote Section -->
+                <div class="flex gap-4 mb-8">
+                    <!-- Calendar Card -->
+                    <div class="card bg-base-100 shadow-xl flex-1">
                         <div class="card-body">
-                            <h3 class="card-title mb-4">Today's Tasks</h3>
-                            <ul class="space-y-4">
-                                <li>
-                                    <div class="form-control">
-                                        <label class="label cursor-pointer">
-                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
-                                            <span class="label-text">Working on Asia Project</span>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-control">
-                                        <label class="label cursor-pointer">
-                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
-                                            <span class="label-text">Team Meeting</span>
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="form-control">
-                                        <label class="label cursor-pointer">
-                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
-                                            <span class="label-text">Doing Research</span>
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
-                            <div class="mt-4">
-                                <progress id="taskProgress" class="progress progress-primary w-full" value="0" max="100"></progress>
-                                <p id="taskCount" class="text-sm text-right mt-1">0/3 tasks completed</p>
+                            <h3 class="card-title mb-4">Calendar</h3>
+                            <div class="grid grid-cols-7 gap-1 text-center">
+                                <div class="font-bold">Sun</div>
+                                <div class="font-bold">Mon</div>
+                                <div class="font-bold">Tue</div>
+                                <div class="font-bold">Wed</div>
+                                <div class="font-bold">Thu</div>
+                                <div class="font-bold">Fri</div>
+                                <div class="font-bold">Sat</div>
+                                <!-- Example dates -->
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">1</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">2</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">3</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">4</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">5</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">6</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">7</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">8</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">9</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">10</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">11</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">12</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">13</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">14</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">15</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">16</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">17</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">18</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">19</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">20</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">21</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">22</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">23</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">24</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">25</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">26</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">27</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">28</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">29</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">30</div>
+                                <div class="p-2 hover:bg-base-200 cursor-pointer">31</div>
                             </div>
                         </div>
                     </div>
-                    <div class="card bg-base-100 shadow-xl">
+
+                    <!-- Daily Quote Card -->
+                    <div class="card bg-base-100 shadow-xl flex-1">
                         <div class="card-body">
                             <h3 class="card-title mb-4">Daily Quote</h3>
-                                <h2 class="font-bold" id="dailyQuote"></h2>
+                            <p id="dailyQuote" class="text-xl italic"></p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Today's Tasks Section -->
+                <div class="card bg-base-100 shadow-xl mb-8">
+                    <div class="card-body">
+                        <h3 class="card-title mb-4">Today's Tasks</h3>
+                        
+                        <!-- Tabs for Task Sorting -->
+                        <div role="tablist" class="flex mb-4 border-b">
+                            <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Not Worked" id="tab1" checked />
+                            <label for="tab1" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Not Worked</label>
+                            
+                            <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Ongoing" id="tab2" />
+                            <label for="tab2" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Ongoing</label>
+                            
+                            <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Completed" id="tab3" />
+                            <label for="tab3" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Completed</label>
+                        </div>
+
+                        <!-- Task Content -->
+                        <div id="content1" role="tabpanel" class="tab-content p-4">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-base-200">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text">Task 1 - Not Started</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card bg-base-200">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text">Task 2 - Not Started</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content2" role="tabpanel" class="tab-content p-4 hidden">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-base-200">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text">Working on Asia Project</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card bg-base-200">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text">Team Meeting</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content3" role="tabpanel" class="tab-content p-4 hidden">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-base-200">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text">Final Report Submission</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </main>
@@ -95,57 +177,15 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
-
-        if (calendarEl) {
-            // Initialize FullCalendar only if the element exists
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
-                events: [
-                    {
-                        title: 'Asia Project',
-                        start: '2023-08-01',
-                    },
-                    {
-                        title: 'Team Meeting',
-                        start: '2023-08-03T10:30:00',
-                        end: '2023-08-03T12:30:00'
-                    },
-                    {
-                        title: 'Research',
-                        start: '2023-08-05'
-                    }
-                ],
-                editable: true,
-                selectable: true,
-                dateClick: function(info) {
-                    alert('Date clicked: ' + info.dateStr);
-                }
-            });
-
-            calendar.render();
-        } else {
-            console.error('Calendar element not found');
-        }
-
         // Task Progress Update
         const checkboxes = document.querySelectorAll('.checkbox');
-        const progress = document.getElementById('taskProgress');
-        const taskCount = document.getElementById('taskCount');
 
         function updateProgress() {
             const totalTasks = checkboxes.length;
             const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
-
-            progress.value = (completedTasks / totalTasks) * 100;
-            taskCount.textContent = `${completedTasks}/${totalTasks} tasks completed`;
         }
 
         checkboxes.forEach(checkbox => {
@@ -170,6 +210,28 @@
 
         const dailyQuote = quotes[Math.floor(Math.random() * quotes.length)];
         document.getElementById('dailyQuote').textContent = dailyQuote;
+
+        // Tab Functionality
+        const tabs = document.querySelectorAll('input[name="my_tabs"]');
+        const contents = document.querySelectorAll('.tab-content');
+        const tabLabels = document.querySelectorAll('label[for^="tab"]'); // Select tab labels
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('change', () => {
+                // Hide all tab contents
+                contents.forEach((content) => {
+                    content.classList.add('hidden');
+                });
+                // Show the selected tab content
+                contents[index].classList.remove('hidden');
+
+                // Update active tab style
+                tabLabels.forEach(label => {
+                    label.classList.remove('border-base-500'); // Remove active border
+                });
+                tabLabels[index].classList.add('border-base-500'); // Add active border to selected tab
+            });
+        });
     });
     </script>
 </body>
