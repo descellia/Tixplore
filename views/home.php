@@ -52,70 +52,40 @@
 
     <section class="container mx-auto mt-12">
         <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Upcoming Events</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Event Card 1 -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6" data-aos="fade-up">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Harusnya naik</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
+
+        <div class="chat chat-start">
+  <div class="chat-image avatar">
+    <div class="w-10 rounded-full">
+      <img
+        alt="Tailwind CSS chat bubble component"
+        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+    </div>
+  </div>
+  <div class="chat-bubble">It was said that you would, destroy the Sith, not join them.</div>
+</div>
+<div class="chat chat-start">
+  <div class="chat-image avatar">
+    <div class="w-10 rounded-full">
+      <img
+        alt="Tailwind CSS chat bubble component"
+        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+    </div>
+  </div>
+  <div class="chat-bubble">It was you who would bring balance to the Force</div>
+</div>
+<div class="chat chat-start">
+  <div class="chat-image avatar">
+    <div class="w-10 rounded-full">
+      <img
+        alt="Tailwind CSS chat bubble component"
+        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+    </div>
+  </div>
+  <div class="chat-bubble">Not leave it in Darkness</div>
+</div>
+
+
             <!-- Repeat Event Card for more events -->
-        </div>
     </section>
 
     <footer class="bg-gray-800 text-white mt-12">
