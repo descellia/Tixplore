@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/css/dycalendar.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/js/dycalendar.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Todora - Task Management</title>
 </head>
+
 <body class="bg-base-100 text-base-content">
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
@@ -31,50 +35,13 @@
                 <div class="flex gap-4 mb-8">
                     <!-- Calendar Card -->
                     <div class="card bg-base-100 shadow-xl flex-1">
-                        <div class="card-body">
-                            <h3 class="card-title mb-4">Calendar</h3>
-                            <div class="grid grid-cols-7 gap-1 text-center">
-                                <div class="font-bold">Sun</div>
-                                <div class="font-bold">Mon</div>
-                                <div class="font-bold">Tue</div>
-                                <div class="font-bold">Wed</div>
-                                <div class="font-bold">Thu</div>
-                                <div class="font-bold">Fri</div>
-                                <div class="font-bold">Sat</div>
-                                <!-- Example dates -->
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">1</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">2</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">3</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">4</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">5</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">6</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">7</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">8</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">9</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">10</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">11</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">12</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">13</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">14</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">15</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">16</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">17</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">18</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">19</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">20</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">21</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">22</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">23</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">24</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">25</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">26</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">27</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">28</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">29</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">30</div>
-                                <div class="p-2 hover:bg-base-200 cursor-pointer">31</div>
-                            </div>
+                    <div class="bg-base-100 shadow-lg p-4 flex-1">
+                        <h3 class="text-xl font-bold mb-4">Calendar</h3>
+                        <div id="dycalendar" class="border-2 border-gray-300 p-4 h-64 flex items-center justify-center">
+                            <!-- Placeholder or calendar will be loaded here -->
+                            <span>Loading Calendar...</span>
                         </div>
+                    </div>
                     </div>
 
                     <!-- Daily Quote Card -->
@@ -90,15 +57,15 @@
                 <div class="card bg-base-100 shadow-xl mb-8">
                     <div class="card-body">
                         <h3 class="card-title mb-4">Today's Tasks</h3>
-                        
+
                         <!-- Tabs for Task Sorting -->
                         <div role="tablist" class="flex mb-4 border-b">
                             <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Not Worked" id="tab1" checked />
                             <label for="tab1" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Not Worked</label>
-                            
+
                             <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Ongoing" id="tab2" />
                             <label for="tab2" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Ongoing</label>
-                            
+
                             <input type="radio" name="my_tabs" role="tab" class="tab tab-bordered hidden" aria-label="Completed" id="tab3" />
                             <label for="tab3" class="tab cursor-pointer pb-2 border-b-2 border-transparent hover:border-base-500 active:border-base-500">Completed</label>
                         </div>
@@ -180,6 +147,13 @@
     <script src="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize dyCalendar
+        dycalendar.draw({
+            target: '#dycalendar',
+            type: 'month',
+            highlighttoday: true
+        });
+
         // Task Progress Update
         const checkboxes = document.querySelectorAll('.checkbox');
 
@@ -194,22 +168,16 @@
 
         updateProgress(); // Initialize progress on page load
 
-        // Daily Quotes
-        const quotes = [
-            "The only way to do great work is to love what you do. - Steve Jobs",
-            "Believe you can and you're halfway there. - Theodore Roosevelt",
-            "Your limitation—it's only your imagination.",
-            "Push yourself, because no one else is going to do it for you.",
-            "Great things never come from comfort zones.",
-            "Dream it. Wish it. Do it.",
-            "Success doesn’t just find you. You have to go out and get it.",
-            "The harder you work for something, the greater you’ll feel when you achieve it.",
-            "Dream bigger. Do bigger.",
-            "Don’t stop when you’re tired. Stop when you’re done."
-        ];
-
-        const dailyQuote = quotes[Math.floor(Math.random() * quotes.length)];
-        document.getElementById('dailyQuote').textContent = dailyQuote;
+        // Fetch daily quote from quotable.io API
+        fetch('https://api.quotable.io/random')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('dailyQuote').textContent = `"${data.content}" - ${data.author}`;
+            })
+            .catch(error => {
+                console.error('Error fetching quote:', error);
+                document.getElementById('dailyQuote').textContent = 'Unable to fetch quote at this time.';
+            });
 
         // Tab Functionality
         const tabs = document.querySelectorAll('input[name="my_tabs"]');
@@ -225,14 +193,15 @@
                 // Show the selected tab content
                 contents[index].classList.remove('hidden');
 
-                // Update active tab style
-                tabLabels.forEach(label => {
-                    label.classList.remove('border-base-500'); // Remove active border
+                // Adjust active class for tabs
+                tabLabels.forEach((label) => {
+                    label.classList.remove('border-b-primary');
                 });
-                tabLabels[index].classList.add('border-base-500'); // Add active border to selected tab
+                tabLabels[index].classList.add('border-b-primary');
             });
         });
     });
     </script>
 </body>
+
 </html>
