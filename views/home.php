@@ -1,132 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../assets/css/output.css" rel="stylesheet">
-    <link rel="stylesheet" href="/node_modules/aos/dist/aos.css">
-    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
+    <title>Todora - Task Management</title>
 </head>
-<body>
-    <div class="navbar bg-base-100">
-    <div class="flex-1">
-        <a class="btn btn-ghost text-xl">Tixplore</a>
+<body class="bg-base-100 text-base-content">
+    <div class="drawer lg:drawer-open">
+        <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col">
+            <!-- Page content here -->
+            <main class="p-4 lg:p-8">
+                <div class="flex justify-between items-center mb-8">
+                    <h2 class="text-3xl font-bold">Welcome, Dominica!</h2>
+                    <div class="flex items-center space-x-4">
+                        <div class="form-control">
+                            <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+                        </div>
+                        <div class="avatar">
+                            <div class="w-10 rounded-full">
+                                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Calendar Section with FullCalendar Integration -->
+                <div class="card bg-base-100 shadow-xl mb-8">
+                    <div class="card-body">
+                        <h3 class="card-title">Calendar</h3>
+                        <div id="calendar" class="mt-4"></div>
+                    </div>
+                </div>
+                <!-- Tasks and Quotes -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Today's Tasks</h3>
+                            <ul class="space-y-4">
+                                <li>
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
+                                            <span class="label-text">Working on Asia Project</span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
+                                            <span class="label-text">Team Meeting</span>
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="form-control">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" onclick="updateProgress()" />
+                                            <span class="label-text">Doing Research</span>
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="mt-4">
+                                <progress id="taskProgress" class="progress progress-primary w-full" value="0" max="100"></progress>
+                                <p id="taskCount" class="text-sm text-right mt-1">0/3 tasks completed</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4">Daily Quote</h3>
+                                <h2 class="font-bold" id="dailyQuote"></h2>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <div class="drawer-side">
+            <label for="my-drawer" class="drawer-overlay"></label>
+            <ul class="menu p-4 w-80 h-full bg-base-200 text-base-content">
+                <!-- Sidebar content here -->
+                <li><a class="text-xl font-bold mb-4">Todora</a></li>
+                <li><a> Home</a></li>
+                <li><a> Project</a></li>
+                <li><a> Calendar</a></li>
+                <li><a> Team Chat</a></li>
+                <li><a>⚙️ Settings</a></li>
+            </ul>
+        </div>
     </div>
-    <div class="flex-none gap-2">
-        <div class="form-control">
-        <input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
-        </div>
-        <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-            <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-            </div>
-        </div>
-        <ul
-            tabindex="0"
-            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-            <li>
-            <a class="justify-between">
-                Profile
-                <span class="badge">New</span>
-            </a>
-            </li>
-            <li><a>Settings</a></li>
-            <li><a>Logout</a></li>
-        </ul>
-        </div>
-    </div>
-    </div>
 
-    <button class="btn btn-primary" action="/login">Button</button>
-
-    <section class="text-center mt-12">
-        <h1 class="text-4xl font-bold text-gray-900">Find and Book Your Next Event</h1>
-        <p class="mt-4 text-gray-600">Discover events, buy tickets, and make the most of your experiences.</p>
-        <div class="mt-6">
-            <a href="/events" class="bg-blue-500 text-white px-8 py-3 rounded-md hover:bg-blue-600">Browse Events</a>
-        </div>
-    </section>
-
-    <section class="container mx-auto mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 text-center mb-6">Upcoming Events</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Event Card 1 -->
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6" data-aos="fade-up">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Harusnya naik</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg shadow-md p-6">
-                <img src="/path/to/event-image1.jpg" alt="Event 1" class="w-full h-48 object-cover rounded-t-lg">
-                <div class="mt-4" data-aos="fade-up">
-                    <h3 class="text-xl font-semibold text-gray-900">Event Title 1</h3>
-                    <p class="text-gray-600 mt-2">Brief description of the event.</p>
-                    <div class="mt-4">
-                        <a href="/eventdetails/event1" class="text-blue-500 hover:underline">Learn More</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Repeat Event Card for more events -->
-        </div>
-    </section>
-
-    <footer class="bg-gray-800 text-white mt-12">
-        <div class="container mx-auto py-6 text-center">
-            <p>&copy; 2023 Event Ticketing. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <script src="/node_modules/aos/dist/aos.js"></script>
     <script>
-        AOS.init();
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+
+        if (calendarEl) {
+            // Initialize FullCalendar only if the element exists
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    {
+                        title: 'Asia Project',
+                        start: '2023-08-01',
+                    },
+                    {
+                        title: 'Team Meeting',
+                        start: '2023-08-03T10:30:00',
+                        end: '2023-08-03T12:30:00'
+                    },
+                    {
+                        title: 'Research',
+                        start: '2023-08-05'
+                    }
+                ],
+                editable: true,
+                selectable: true,
+                dateClick: function(info) {
+                    alert('Date clicked: ' + info.dateStr);
+                }
+            });
+
+            calendar.render();
+        } else {
+            console.error('Calendar element not found');
+        }
+
+        // Task Progress Update
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const progress = document.getElementById('taskProgress');
+        const taskCount = document.getElementById('taskCount');
+
+        function updateProgress() {
+            const totalTasks = checkboxes.length;
+            const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
+
+            progress.value = (completedTasks / totalTasks) * 100;
+            taskCount.textContent = `${completedTasks}/${totalTasks} tasks completed`;
+        }
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+
+        updateProgress(); // Initialize progress on page load
+
+        // Daily Quotes
+        const quotes = [
+            "The only way to do great work is to love what you do. - Steve Jobs",
+            "Believe you can and you're halfway there. - Theodore Roosevelt",
+            "Your limitation—it's only your imagination.",
+            "Push yourself, because no one else is going to do it for you.",
+            "Great things never come from comfort zones.",
+            "Dream it. Wish it. Do it.",
+            "Success doesn’t just find you. You have to go out and get it.",
+            "The harder you work for something, the greater you’ll feel when you achieve it.",
+            "Dream bigger. Do bigger.",
+            "Don’t stop when you’re tired. Stop when you’re done."
+        ];
+
+        const dailyQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('dailyQuote').textContent = dailyQuote;
+    });
     </script>
 </body>
 </html>
