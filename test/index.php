@@ -22,33 +22,33 @@ if (isset($_POST['login'])) {
     }
 }
 
-// Handle logout
+// Fungsi Logout
 if (isset($_GET['logout'])) {
     session_destroy();
     header("Location: index.php");
 }
 
-// Handle to-do list creation
+// Fungsi bikin todo list
 if (isset($_POST['create_list'])) {
     $title = $_POST['title'];
     $user_id = $_SESSION['user_id'];
     $conn->query("INSERT INTO todo_lists (user_id, title) VALUES ('$user_id', '$title')");
 }
 
-// Handle to-do list deletion
+// Fungsi hapus todo list
 if (isset($_GET['delete_list'])) {
     $id = $_GET['delete_list'];
     $conn->query("DELETE FROM todo_lists WHERE id='$id'");
 }
 
-// Handle task creation
+// Fungsi bikin task
 if (isset($_POST['add_task'])) {
     $task = $_POST['task'];
     $list_id = $_POST['list_id'];
     $conn->query("INSERT INTO tasks (list_id, task) VALUES ('$list_id', '$task')");
 }
 
-// Handle task deletion
+// Fungsi hapus task
 if (isset($_GET['delete_task'])) {
     $id = $_GET['delete_task'];
     $list_id = $conn->query("SELECT list_id FROM tasks WHERE id='$id'")->fetch_assoc()['list_id'];
@@ -56,21 +56,21 @@ if (isset($_GET['delete_task'])) {
     header("Location: index.php?list_id=$list_id");
 }
 
-// Handle task completion toggle
+// Fungsi mengubah status
 if (isset($_POST['toggle_completion'])) {
     $task_id = $_POST['task_id'];
     $list_id = $_POST['list_id'];
     $conn->query("UPDATE tasks SET completed = NOT completed WHERE id='$task_id'");
 }
 
-// Get to-do lists for the logged-in user
+// Fungsi mengambil task yang pernah di pakai user
 $lists = [];
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     $lists = $conn->query("SELECT * FROM todo_lists WHERE user_id='$user_id'")->fetch_all(MYSQLI_ASSOC);
 }
 
-// Get tasks for a specific list
+// Fungsi mengambil task dari list tertentu
 $tasks = [];
 if (isset($_GET['list_id'])) {
     $list_id = $_GET['list_id'];
