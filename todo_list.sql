@@ -1,6 +1,6 @@
 CREATE DATABASE todo_list;
 
-USE todo-list;
+USE todo_list;
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
