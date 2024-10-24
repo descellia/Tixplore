@@ -2,6 +2,7 @@
 require 'fungsi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     if (isset($_POST['add_task'])) {
         addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date']);
     }
@@ -50,6 +51,8 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                             <option value="">All Categories</option>
                             <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
                             <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
+                            <option value="Personal" <?= $filter_category == 'Personal' ? 'selected' : '' ?>>Personal</option>
+                            <option value="Education" <?= $filter_category == 'Education' ? 'selected' : '' ?>>Education</option>
                             <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
                             <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
                         </select>
@@ -114,6 +117,8 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                                 <select name="category" class="select select-bordered w-full">
                                     <option value="Hobby">Hobby</option>
                                     <option value="Work">Work</option>
+                                    <option value="Personal">Personal</option>
+                                    <option value="Education">Education</option>
                                     <option value="Finance">Finance</option>
                                     <option value="Health">Health</option>
                                 </select>
@@ -143,8 +148,8 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                     <!-- Non-clickable border -->
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
-                <li><a href="/UTS-WEBPROG-LAB/views/home.php" class="text-gray-600 hover:text-gray-900">Home</a></li>
-                <li><a href="/UTS-WEBPROG-LAB/views/task_page.php" class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
             </ul>
         </div>
     </div>

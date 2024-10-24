@@ -76,9 +76,6 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
                     <div class="flex items-center space-x-4">
-                        <div class="form-control">
-                            <input type="text" placeholder="Search" name="search" class="input input-bordered input-accent w-24 md:w-auto" />
-                        </div>
                         <div class="avatar">
                             <div class="w-10 rounded-full">
                                 <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
@@ -163,8 +160,8 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                     <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
-                <li><a href="/UTS-WEBPROG-LAB/views/home.php" class="text-gray-600 hover:text-gray-900">Home</a></li>
-                <li><a href="/UTS-WEBPROG-LAB/views/task_page.php" class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
             </ul>
         </div>
     </div>
