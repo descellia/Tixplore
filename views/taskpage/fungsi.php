@@ -31,18 +31,20 @@ function deleteTask($conn, $taskId) {
     $conn->query($sql);
 }
 
-function getFilteredTasks($conn, $search, $filter_category) {
-    $sql = "SELECT * FROM tasks WHERE 1=1";
-
-    if (!empty($search)) {
-        $sql .= " AND name LIKE '%" . $conn->real_escape_string($search) . "%'";
+function getFilteredTasks($conn, $search = '', $filter_category = '') {
+    $query = "SELECT * FROM tasks WHERE 1=1";
+    
+    if ($search) {
+        $query .= " AND name LIKE '%" . $conn->real_escape_string($search) . "%'";
     }
 
-    if (!empty($filter_category)) {
-        $sql .= " AND category = '" . $conn->real_escape_string($filter_category) . "'";
+    if ($filter_category) {
+        $query .= " AND category = '" . $conn->real_escape_string($filter_category) . "'";
     }
 
-    return $conn->query($sql);
+    $query .= " ORDER BY due_date ASC";
+
+    return $conn->query($query);
 }
 
 ?>
