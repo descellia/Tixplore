@@ -76,7 +76,7 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
                     <div class="flex items-center space-x-4">
-                        <div class="avatar">
+                        <div class="avatar" onclick="window.location.href='profile.php'">
                             <div class="w-10 rounded-full">
                                 <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
                             </div>
@@ -162,6 +162,7 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                 </li>
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
             </ul>
         </div>
     </div>
