@@ -15,13 +15,13 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To do List</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Task Management</title>
     <style>
         .status-Done { background-color: #3EE917; color: white; }
         .status-Not { background-color: #0e0c0c; color: white; }
@@ -29,112 +29,157 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
         .status-Working { background-color: #FBBF24; color: white; }
     </style>
 </head>
-<body class="bg-gray-100 font-sans">
-    <div class="flex h-screen">
-        <!-- Main Content -->
-        <div class="flex-1 p-6">
 
-            <!-- Search and Filter Form -->
-            <form method="get" class="mb-4 flex justify-end">
-                <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="border rounded px-2 py-1">
-                <select name="filter_category" class="border rounded px-2 py-1 mx-2">
-                    <option value="">All Categories</option>
-                    <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
-                    <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
-                    <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
-                    <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
-                </select>
-                <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded">Search</button>
-            </form>
+<body class="bg-gray-100 text-gray-800">
+    <div class="drawer lg:drawer-open">
+        <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content flex flex-col">
+            <!-- Main content here -->
+            <main class="p-4 lg:p-8">
 
-            <div class="mt-4" id="task-list">
-                <!-- Display tasks -->
-                <table class="w-full mt-4">
-                    <thead>
-                        <tr class="text-left text-gray-600">
-                            <th class="py-2">Task</th>
-                            <th class="py-2">Status</th>
-                            <th class="py-2">Category</th>
-                            <th class="py-2">Due date</th>
-                            <th class="py-2">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php while ($task = $tasks->fetch_assoc()): ?>
-                        <tr>
-                            <td class="py-2"><?= htmlspecialchars($task['name']) ?></td>
-                            <td class="py-2"><span class="status-<?= htmlspecialchars($task['status']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['status']) ?></span></td>
-                            <td class="py-2"><span class="category-<?= htmlspecialchars($task['category']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['category']) ?></span></td>
-                            <td class="py-2">
-                                <span class="due-date" data-due-date="<?= htmlspecialchars($task['due_date']) ?>">
-                                    <?= htmlspecialchars(date('Y-m-d H:i', strtotime($task['due_date']))) ?> <!-- Format dengan waktu -->
-                                </span>
-                                <span class="countdown" id="countdown-<?= htmlspecialchars($task['id']) ?>"></span>
-                            </td>
-                            <script>
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    const dueDates = document.querySelectorAll('.due-date');
+                <!-- Button for adding a new task -->
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <label for="new-task-modal" class="btn btn-accent">New Task</label>
+                    </div>
 
-                                    dueDates.forEach(dueDateElement => {
-                                        const dueDate = new Date(dueDateElement.dataset.dueDate).getTime();
-                                        const countdownElement = document.getElementById('countdown-' + dueDateElement.closest('tr').querySelector('td:last-child').querySelector('form input[name="task_id"]').value);
+                    <!-- Search and Filter Form -->
+                    <form method="get" class="flex justify-end">
+                        <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="input input-bordered input-accent w-full md:w-auto" />
+                        <select name="filter_category" class="select select-bordered select-accent w-full md:w-auto mx-2">
+                            <option value="">All Categories</option>
+                            <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
+                            <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
+                            <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
+                            <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
+                        </select>
+                        <button type="submit" class="btn btn-accent">Search</button>
+                    </form>
+                </div>
 
-                                        const updateCountdown = () => {
-                                            const now = new Date().getTime();
-                                            const distance = dueDate - now;
-                                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                <!-- Task Management Table -->
+                <div class="overflow-x-auto">
+                    <table class="table w-full">
+                        <thead>
+                            <tr class="text-left bg-gray-200">
+                                <th>Task</th>
+                                <th>Status</th>
+                                <th>Category</th>
+                                <th>Due date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php while ($task = $tasks->fetch_assoc()): ?>
+                                <tr class="bg-gray-100 hover:bg-gray-200">
+                                    <td><?= htmlspecialchars($task['name']) ?></td>
+                                    <td><span class="status-<?= htmlspecialchars($task['status']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['status']) ?></span></td>
+                                    <td><?= htmlspecialchars($task['category']) ?></td>
+                                    <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($task['due_date']))) ?></td>
+                                    <td>
+                                        <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
+                                        <form method="post" action="delete_task.php" style="display:inline">
+                                            <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
+                                            <button class="text-red-600">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <tr class="bg-gray-50 hover:bg-gray-200">
+                                    <!-- Repeat the row content for each task, alternating classes -->
+                                </tr>
+                            <?php endwhile; ?>
+                        </tbody>
+                    </table>
+                </div>
 
-                                            if (distance < 0) {
-                                                countdownElement.innerHTML = "EXPIRED";
-                                            } else {
-                                                countdownElement.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-                                            }
-                                        };
+                <!-- New Task Modal -->
+                <input type="checkbox" id="new-task-modal" class="modal-toggle" />
+                <div class="modal">
+                    <div class="modal-box">
+                        <h3 class="font-bold text-lg mb-4">Add New Task</h3>
+                        <!-- Form submits to the same page -->
+                        <form method="post" action="task_page.php">
+                            <div class="mb-4">
+                                <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
+                            </div>
+                            <div class="mb-4">
+                                <select name="status" class="select select-bordered w-full">
+                                    <option value="Not Started Yet">Not Started Yet</option>
+                                    <option value="Working on it">Working on it</option>
+                                    <option value="Stuck">Stuck</option>
+                                    <option value="Done">Done</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <select name="category" class="select select-bordered w-full">
+                                    <option value="Hobby">Hobby</option>
+                                    <option value="Work">Work</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Health">Health</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
+                            </div>
+                            <div class="modal-action">
+                                <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
+                                <label for="new-task-modal" class="btn">Cancel</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-                                        setInterval(updateCountdown, 1000);
-                                        updateCountdown();
-                                    });
-                                });
-                            </script>
+            </main>
+        </div>
 
-                            <td class="py-2">
-                                <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
-                                <form method="post" action="delete_task.php" style="display:inline">
-                                    <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                    <button class="text-red-600">Delete</button>
-                                </form>
-                            </td>
-                            </td>
-                        </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
-
-                <!-- Add new task form -->
-                <br>
-                <br>
-                <form method="post" class="mt-4">
-                    <input type="text" name="task_name" placeholder="Task name" required class="border rounded px-2 py-1">
-                    <select name="status" class="border rounded px-2 py-1">
-                        <option value="Done">Done</option>
-                        <option value="Not Started Yet">Not started yet</option>
-                        <option value="Stuck">Stuck</option>
-                        <option value="Working on it">Working on it</option>
-                    </select>
-                    <select name="category" class="border rounded px-2 py-1">
-                        <option value="Hobby">Hobby</option>
-                        <option value="Work">Work</option>
-                        <option value="Finance">Finance</option>
-                        <option value="Health">Health</option>
-                    </select>
-                    <input type="datetime-local" name="due_date" required class="border rounded px-2 py-1">
-                    <button type="submit" name="add_task" class="bg-blue-600 text-white px-4 py-2 rounded">Add Task</button>
-                </form>
-            </div>
+        <!-- Sidebar -->
+        <div class="drawer-side">
+            <label for="my-drawer" class="drawer-overlay"></label>
+            <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
+                <!-- Sidebar content here -->
+                <li class="mb-4 flex flex-col items-center">
+                    <!-- Centered and larger Todora text -->
+                    <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
+                    <!-- Non-clickable border -->
+                    <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
+                </li>
+                <li><a href="/UTS-WEBPROG-LAB/views/home.php" class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href="/UTS-WEBPROG-LAB/views/task_page.php" class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+            </ul>
         </div>
     </div>
 </body>
 </html>
+
+<?php
+// Include your database connection
+include('db.php');
+
+// Check if the form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
+    // Get the form data
+    $task_name = $_POST['task_name'];
+    $status = $_POST['status'];
+    $category = $_POST['category'];
+    $due_date = $_POST['due_date'];
+
+    // Insert the new task into the database
+    $sql = "INSERT INTO tasks (name, status, category, due_date) VALUES (?, ?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ssss", $task_name, $status, $category, $due_date);
+    
+    if ($stmt->execute()) {
+        // If the insertion is successful, redirect back to the same page
+        header("Location: task_page.php");
+        exit();
+    } else {
+        // If there's an error, you can handle it here (optional)
+        echo "Error: " . $stmt->error;
+    }
+}
+
+// Fetch tasks from the database to display in the table
+$sql = "SELECT * FROM tasks ORDER BY due_date ASC";
+$tasks = $conn->query($sql);
+
+?>

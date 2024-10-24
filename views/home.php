@@ -1,41 +1,27 @@
-<?php
-require 'fungsi.php';
-
-// Search and filter logic
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$filter_category = isset($_GET['category']) ? $_GET['category'] : '';
-$filter_status = isset($_GET['status']) ? $_GET['status'] : '';
-
-$tasks = getFilteredTasks($conn, $search, $filter_category, $filter_status); // Fetch filtered tasks
-?>
-
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/css/dycalendar.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/js/dycalendar.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
     <title>Todora - Task Management</title>
-    <style>
-        .status-Done { background-color: #3EE917; color: white; }
-        .status-Not { background-color: #0e0c0c; color: white; }
-        .status-Stuck { background-color: #EF4444; color: white; }
-        .status-Working { background-color: #FBBF24; color: white; }
-    </style>
 </head>
-<body class="bg-base-100 text-base-content">
+
+<body class="bg-gray-100 text-gray-800">
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
+            <!-- Page content here -->
             <main class="p-4 lg:p-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold">Welcome, Dominica!</h2>
+                    <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
                     <div class="flex items-center space-x-4">
                         <div class="form-control">
-                            <input type="text" name="search" placeholder="Search" value="<?= htmlspecialchars($search) ?>" class="input input-bordered w-24 md:w-auto" />
+                            <input type="text" placeholder="Search" class="input input-bordered input-accent w-24 md:w-auto" />
                         </div>
                         <div class="avatar">
                             <div class="w-10 rounded-full">
@@ -45,144 +31,188 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $filter_status); // 
                     </div>
                 </div>
 
-                <!-- Calendar Section with FullCalendar Integration -->
-                <div class="card bg-base-100 shadow-xl mb-8">
-                    <div class="card-body">
-                        <h3 class="card-title">Calendar</h3>
-                        <div id="calendar" class="mt-4"></div>
-                    </div>
-                </div>
-
-                <!-- Tasks Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <h3 class="card-title mb-4">Today's Tasks</h3>
-                            <!-- Search and Filter -->
-                            <form method="get" class="mb-4 flex justify-between">
-                                <input type="text" name="search" placeholder="Search tasks..." value="<?= htmlspecialchars($search) ?>" class="border rounded px-2 py-1 mx-2">
-                                
-                                <select name="category" class="border rounded px-2 py-1 mx-2">
-                                    <option value="">All Categories</option>
-                                    <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
-                                    <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
-                                    <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
-                                    <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
-                                </select>
-                                
-                                <select name="status" class="border rounded px-2 py-1 mx-2">
-                                    <option value="">All Status</option>
-                                    <option value="Done" <?= $filter_status == 'Done' ? 'selected' : '' ?>>Done</option>
-                                    <option value="Not Started Yet" <?= $filter_status == 'Not Started Yet' ? 'selected' : '' ?>>Not started yet</option>
-                                    <option value="Stuck" <?= $filter_status == 'Stuck' ? 'selected' : '' ?>>Stuck</option>
-                                    <option value="Working on it" <?= $filter_status == 'Working on it' ? 'selected' : '' ?>>Working on it</option>
-                                </select>
-
-                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mx-2">Filter</button>
-                            </form>
-
-                            <!-- Display tasks -->
-                            <div class="mt-4" id="task-list">
-                                <table class="w-full mt-4">
-                                    <thead>
-                                        <tr class="text-left text-gray-600">
-                                            <th class="py-2">Task</th>
-                                            <th class="py-2">Status</th>
-                                            <th class="py-2">Category</th>
-                                            <th class="py-2">Due date</th>
-                                            <th class="py-2">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while ($task = $tasks->fetch_assoc()): ?>
-                                        <tr>
-                                            <td class="py-2"><?= htmlspecialchars($task['name']) ?></td>
-                                            <td class="py-2"><span class="status-<?= htmlspecialchars($task['status']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['status']) ?></span></td>
-                                            <td class="py-2"><span class="category-<?= htmlspecialchars($task['category']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['category']) ?></span></td>
-                                            <td class="py-2"><?= htmlspecialchars($task['due_date']) ?></td>
-                                            <td class="py-2">
-                                                <button class="text-blue-600">Edit</button>
-                                                <form method="post" action="delete_task.php" style="display:inline">
-                                                    <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                                    <button class="text-red-600">Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        <?php endwhile; ?>
-                                    </tbody>
-                                </table>
-
-                                <!-- Add new task form -->
-                                <br><br>
-                                <form method="post" class="mt-4">
-                                    <input type="text" name="task_name" placeholder="Task name" required class="border rounded px-2 py-1">
-                                    <select name="status" class="border rounded px-2 py-1">
-                                        <option value="Done">Done</option>
-                                        <option value="Not Started Yet">Not started yet</option>
-                                        <option value="Stuck">Stuck</option>
-                                        <option value="Working on it">Working on it</option>
-                                    </select>
-                                    <select name="category" class="border rounded px-2 py-1">
-                                        <option value="Hobby">Hobby</option>
-                                        <option value="Work">Work</option>
-                                        <option value="Finance">Finance</option>
-                                        <option value="Health">Health</option>
-                                    </select>
-                                    <input type="date" name="due_date" required class="border rounded px-2 py-1">
-                                    <button type="submit" name="add_task" class="bg-blue-600 text-white px-4 py-2 rounded">Add Task</button>
-                                </form>
+                <!-- Calendar and Daily Quote Section -->
+                <div class="flex gap-4 mb-8">
+                    <!-- Calendar Card -->
+                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
+                        <div class="p-4 flex-1">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Calendar</h3>
+                            <div id="dycalendar" class="border-2 border-gray-200 p-4 h-64 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <!-- Placeholder or calendar will be loaded here -->
+                                <span>Loading Calendar...</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card bg-base-100 shadow-xl">
+                    <!-- Daily Quote Card -->
+                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
                         <div class="card-body">
-                            <h3 class="card-title mb-4">Daily Quote</h3>
-                            <h2 class="font-bold" id="dailyQuote"></h2>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Daily Quote</h3>
+                            <p id="dailyQuote" class="text-xl italic text-gray-600"></p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Today's Tasks Section -->
+                <div class="card bg-white border border-gray-200 rounded-lg mb-8">
+                    <div class="card-body">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Today's Tasks</h3>
+
+                        <!-- Tabs for Task Sorting -->
+                        <div role="tablist" class="flex mb-4 border-b border-gray-200">
+                            <!-- Not Worked Tab -->
+                            <input type="radio" name="my_tabs" id="tab1" class="hidden" checked />
+                            <label for="tab1" class="tab cursor-pointer pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900 active:border-blue-500">
+                                Not Worked
+                            </label>
+
+                            <!-- Ongoing Tab -->
+                            <input type="radio" name="my_tabs" id="tab2" class="hidden" />
+                            <label for="tab2" class="tab cursor-pointer pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900 active:border-blue-500">
+                                Ongoing
+                            </label>
+
+                            <!-- Completed Tab -->
+                            <input type="radio" name="my_tabs" id="tab3" class="hidden" />
+                            <label for="tab3" class="tab cursor-pointer pb-2 border-b-2 border-transparent text-gray-500 hover:text-gray-900 active:border-blue-500">
+                                Completed
+                            </label>
+                        </div>
+
+                        <!-- Task Content -->
+                        <div id="content1" role="tabpanel" class="tab-content p-4">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text text-gray-700">Task 1 - Not Started</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text text-gray-700">Task 2 - Not Started</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content2" role="tabpanel" class="tab-content p-4 hidden">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text text-gray-700">Working on Asia Project</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="card bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text text-gray-700">Team Meeting</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="content3" role="tabpanel" class="tab-content p-4 hidden">
+                            <div class="grid grid-cols-1 gap-4">
+                                <div class="card bg-gray-50 border border-gray-200 rounded-lg">
+                                    <div class="card-body">
+                                        <label class="label cursor-pointer">
+                                            <input type="checkbox" class="checkbox checkbox-primary" />
+                                            <span class="label-text text-gray-700">Final Report Submission</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </main>
         </div>
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu p-4 w-80 h-full bg-base-200 text-base-content">
-                <li><a class="text-xl font-bold mb-4">Todora</a></li>
-                <li><a> Home</a></li>
-                <li><a> Project</a></li>
-                <li><a> Calendar</a></li>
-                <li><a> Team Chat</a></li>
-                <li><a>⚙️ Settings</a></li>
+            <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
+                <!-- Sidebar content here -->
+                <li class="mb-4 flex flex-col items-center">
+                    <!-- Centered and larger Todora text -->
+                    <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
+                    <!-- Non-clickable border -->
+                    <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
+                </li>
+                <li><a href="/UTS-WEBPROG-LAB/views/home.php" class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href="/UTS-WEBPROG-LAB/views/task_page.php" class="text-gray-600 hover:text-gray-900">Task Management</a></li>
             </ul>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
-
-        if (calendarEl) {
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: [], // Populate with your event data
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize dyCalendar
+            dycalendar.draw({
+                target: '#dycalendar',
+                type: 'month',
+                highlighttoday: true
             });
 
-            calendar.render();
-        }
+            // Task Progress Update
+            const checkboxes = document.querySelectorAll('.checkbox');
 
-        // Fetch daily quote from the API
-        async function fetchDailyQuote() {
-            try {
-                const response = await fetch('https://api.quotable.io/random');
-                const data = await response.json();
-                document.getElementById('dailyQuote').innerText = `"${data.content}" - ${data.author}`;
-            } catch (error) {
-                console.error('Error fetching daily quote:', error);
+            function updateProgress() {
+                const totalTasks = checkboxes.length;
+                const completedTasks = Array.from(checkboxes).filter(cb => cb.checked).length;
             }
-        }
 
-        fetchDailyQuote();
-    });
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateProgress);
+            });
+
+            updateProgress(); // Initialize progress on page load
+
+            // Fetch daily quote from quotable.io API
+            fetch('https://api.quotable.io/random')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('dailyQuote').textContent = `"${data.content}" - ${data.author}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching quote:', error);
+                    document.getElementById('dailyQuote').textContent = 'Unable to fetch quote at this time.';
+                });
+
+            // Tab Functionality
+            const tabs = document.querySelectorAll('input[name="my_tabs"]');
+            const contents = document.querySelectorAll('.tab-content');
+            const tabLabels = document.querySelectorAll('label[for^="tab"]'); // Select tab labels
+
+            tabs.forEach((tab, index) => {
+                tab.addEventListener('change', () => {
+                    // Hide all tab contents
+                    contents.forEach((content) => {
+                        content.classList.add('hidden');
+                    });
+                    // Show the selected tab content
+                    contents[index].classList.remove('hidden');
+
+                    // Adjust active class for tabs
+                    tabLabels.forEach((label) => {
+                        label.classList.remove('border-b-primary');
+                    });
+                    tabLabels[index].classList.add('border-b-primary');
+                });
+            });
+        });
     </script>
 </body>
+
 </html>
