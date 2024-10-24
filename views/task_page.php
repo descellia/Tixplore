@@ -4,15 +4,18 @@ require 'fungsi.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
         addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date']);
+
+        header('Location: task_page.php'); 
+        exit(); 
     }
 }
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
 $tasks = getFilteredTasks($conn, $search, $filter_category);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
