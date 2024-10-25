@@ -9,12 +9,10 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_task'])) {
-        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
-        header('Location: task_page.php');
-        exit();
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
+    addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
+    header('Location: task_page.php');
+    exit();
 }
 
 // Search and filter logic
@@ -45,16 +43,12 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
-            <!-- Main content here -->
             <main class="p-4 lg:p-8">
-
-                <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
                         <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
-                    <!-- Search and Filter Form -->
                     <form method="get" class="flex justify-end">
                         <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="input input-bordered input-accent w-full md:w-auto" />
                         <select name="filter_category" class="select select-bordered select-accent w-full md:w-auto mx-2">
@@ -70,7 +64,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                     </form>
                 </div>
 
-                <!-- Task Management Table -->
                 <div class="overflow-x-auto">
                     <table class="table w-full">
                         <thead>
@@ -93,7 +86,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                         <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
                                         <form method="post" action="delete_task.php" style="display:inline">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                            <button class="text-red-600">Delete</button>
+                                            <button type="submit" class="text-red-600">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -107,7 +100,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                 <div class="modal">
                     <div class="modal-box">
                         <h3 class="font-bold text-lg mb-4">Add New Task</h3>
-                        <!-- Form submits to the same page -->
                         <form method="post" action="task_page.php">
                             <div class="mb-4">
                                 <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
@@ -134,7 +126,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
-                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" />
                                 <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
@@ -145,7 +137,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
             </main>
         </div>
 
-        <!-- Sidebar -->
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
             <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
@@ -162,35 +153,3 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
     </div>
 </body>
 </html>
-
-<?php
-include('db.php');
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
-    // Get the form data
-    $task_name = $_POST['task_name'];
-    $status = $_POST['status'];
-    $category = $_POST['category'];
-    $due_date = $_POST['due_date'];
-    $user_id = $_POST['user_id']; // Get user_id from POST data
-
-    $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
-
-    if ($stmt->execute()) {
-        header("Location: task_page.php");
-        exit();
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-}
-
-// Fetching tasks for the specific user
-$sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$tasks = $stmt->get_result();
-
-?>
