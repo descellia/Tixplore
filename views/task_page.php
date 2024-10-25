@@ -1,28 +1,59 @@
 <?php
-require 'fungsi.php';
 session_start();
+require_once 'db.php';
+$user_id = $_SESSION['user_id'] ?? null; // Get user_id from session, set to null if not available
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+// Check if user is logged in
+if (!$user_id) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+// Initialize variables for search and filter
+$search = $_GET['search'] ?? '';
+$filter_category = $_GET['filter_category'] ?? '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_task'])) {
-        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
-        header('Location: task_page.php');
-        exit();
-    }
+// Prepare the SQL query to fetch tasks for the logged-in user
+$query = "SELECT * FROM tasks WHERE user_id = ?";
+$params = [$user_id];
+
+// Add search functionality if search term is provided
+if (!empty($search)) {
+    $query .= " AND name LIKE ?";
+    $params[] = "%$search%";
 }
 
-// Search and filter logic
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
+// Add filter functionality if a category is selected
+if (!empty($filter_category)) {
+    $query .= " AND category = ?";
+    $params[] = $filter_category;
+}
 
-// Fetch tasks for the logged-in user
-$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
+// Prepare and execute the statement
+$stmt = $db->prepare($query);
+$stmt->execute($params);
+
+// Fetch tasks for the user
+$tasks = $stmt->get_result();
+
+// Handle the form submission for adding a new task
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
+    $task_name = $_POST['task_name'];
+    $status = $_POST['status'];
+    $category = $_POST['category'];
+    $due_date = $_POST['due_date'];
+
+    // Add task to the database with user_id
+    $stmt = $db->prepare("INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id); // Include user_id
+    $stmt->execute();
+    $stmt->close();
+    
+    // Redirect or refresh page after adding the task
+    header("Location: task_page.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>
@@ -156,41 +187,9 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
                 <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='logout.php' class="text-gray-600 hover:text-gray-900">Logout</a></li>
             </ul>
         </div>
     </div>
 </body>
 </html>
-
-<?php
-include('db.php');
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
-    // Get the form data
-    $task_name = $_POST['task_name'];
-    $status = $_POST['status'];
-    $category = $_POST['category'];
-    $due_date = $_POST['due_date'];
-    $user_id = $_POST['user_id']; // Get user_id from POST data
-
-    $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
-
-    if ($stmt->execute()) {
-        header("Location: task_page.php");
-        exit();
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-}
-
-// Fetching tasks for the specific user
-$sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$tasks = $stmt->get_result();
-
-?>

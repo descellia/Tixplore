@@ -1,15 +1,13 @@
 <?php
 session_start();
-require_once 'config.php';
-
-$_SESSION['user_id'] = $user['id'];
+require_once '../db.php';
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt = $db->prepare("SELECT * FROM users WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 $query = "SELECT * FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
+$stmt = $db->prepare($query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $query = "UPDATE users SET username = ?, email = ?, password = ?, firstname = ?, lastname = ?, birthdate = ?, profile_pic = ? WHERE id = ?";
-    $stmt = $conn->prepare($query);
+    $stmt = $db->prepare($query);
     $stmt->bind_param('sssssssi', $username, $email, $hashed_password, $firstname, $lastname, $birthdate, $profile_pic, $user_id);
 
     if ($stmt->execute()) {

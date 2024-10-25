@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 $query = "SELECT profile_pic, username FROM users WHERE id = ?";
-$stmt = $conn->prepare($query);
+$stmt = $db->prepare($query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -24,12 +24,12 @@ $username = !empty($user['username']) ? $user['username'] : 'Guest';
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-function getFilteredTasksForToday($conn, $search, $filter_category) {
+function getFilteredTasksForToday($db, $user_id, $search, $filter_category) {
     $today_start = date('Y-m-d 00:00:00');
     $today_end = date('Y-m-d 23:59:59');
 
-    $query = "SELECT * FROM tasks WHERE due_date BETWEEN ? AND ?";
-
+    $query = "SELECT * FROM tasks WHERE user_id = ? AND due_date BETWEEN ? AND ?";
+    
     if (!empty($search)) {
         $query .= " AND name LIKE ?";
     }
@@ -38,25 +38,24 @@ function getFilteredTasksForToday($conn, $search, $filter_category) {
         $query .= " AND category = ?";
     }
 
-    $stmt = $conn->prepare($query);
-
+    $stmt = $db->prepare($query);
     if (!empty($search) && !empty($filter_category)) {
         $search = "%$search%";
-        $stmt->bind_param('ssss', $today_start, $today_end, $search, $filter_category);
+        $stmt->bind_param('isss', $user_id, $today_start, $today_end, $search, $filter_category);
     } elseif (!empty($search)) {
         $search = "%$search%";
-        $stmt->bind_param('sss', $today_start, $today_end, $search);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end, $search);
     } elseif (!empty($filter_category)) {
-        $stmt->bind_param('sss', $today_start, $today_end, $filter_category);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end, $filter_category);
     } else {
-        $stmt->bind_param('ss', $today_start, $today_end);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end);
     }
 
     $stmt->execute();
     return $stmt->get_result();
 }
 
-$tasks = getFilteredTasksForToday($conn, $search, $filter_category);
+$tasks = getFilteredTasksForToday($db, $user_id, $search, $filter_category);
 ?>
 
 <!DOCTYPE html>

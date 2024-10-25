@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $stmt = $conn->prepare("INSERT INTO users (firstname, lastname, username, birthdate, email, password) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt = $db->prepare("INSERT INTO users (firstname, lastname, username, birthdate, email, password) VALUES (?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ssssss", $firstname, $lastname, $username, $birthdate, $email, $hashedPassword);
 
     if ($stmt->execute()) {
@@ -31,5 +31,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
 }
 
-$conn->close();
+$db->close();
 ?>
