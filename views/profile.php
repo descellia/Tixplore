@@ -1,7 +1,8 @@
 <?php
 session_start();
-include('db.php');
+include('db.php'); // Menghubungkan ke database
 
+// Cek apakah pengguna sudah login
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
     exit;
@@ -9,6 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
+// Ambil data pengguna dari database
 $query = "SELECT * FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('i', $user_id);
@@ -16,6 +18,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
+// Proses update profil
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -24,11 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $birthdate = $_POST['birthdate'];
     $profile_pic = $user['profile_pic'];
 
+    // Jika ada upload gambar baru
     if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
         $target_dir = "uploads/";
         $target_file = $target_dir . basename($_FILES['profile_pic']['name']);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
+        // Validasi file
         $check = getimagesize($_FILES['profile_pic']['tmp_name']);
         if ($check !== false) {
             if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target_file)) {
@@ -41,13 +46,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
+    // Cek dan hash password baru jika diisi
     $password = $_POST['password'];
     if (!empty($password)) {
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     } else {
+        // Jika password tidak diisi, gunakan password yang lama
         $hashed_password = $user['password'];
     }
 
+    // Update data pengguna di database
     $query = "UPDATE users SET username = ?, email = ?, password = ?, firstname = ?, lastname = ?, birthdate = ?, profile_pic = ? WHERE id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param('sssssssi', $username, $email, $hashed_password, $firstname, $lastname, $birthdate, $profile_pic, $user_id);
@@ -175,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="file" name="profile_pic">
 
         <button type="submit" class="btn">Update Profile</button>
-        <button type="button" class="btn" onclick="window.location.href='home.php'" style="background-color: #e2e8f0; color: #4a5568;">Back to Home</button>
+        <button type="button" class="btn" onclick="window.location.href='home.php'" style="background-color: #e2e8f0; color: #4a5568;">Cancel</button>
     </form>
 </div>
 
