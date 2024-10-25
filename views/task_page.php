@@ -1,35 +1,27 @@
 <?php
-require_once 'fungsi.php'; // Ensure this includes getFilteredTasks function
-include('db.php');
-
+require 'fungsi.php';
 session_start();
 
-// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-// Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
 
-// If the form is submitted to add a task
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_task'])) {
-        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
-        header('Location: task_page.php');
-        exit();
-    }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
+    addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
+    header('Location: task_page.php');
+    exit();
 }
 
 // Search and filter logic
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-// Fetch tasks for the logged-in user, filtered by category and search keyword
-$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it calls the function from fungsi.php
+// Fetch tasks for the logged-in user
+$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -51,16 +43,12 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
-            <!-- Main content here -->
             <main class="p-4 lg:p-8">
-
-                <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
                         <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
-                    <!-- Search and Filter Form -->
                     <form method="get" class="flex justify-end">
                         <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="input input-bordered input-accent w-full md:w-auto" />
                         <select name="filter_category" class="select select-bordered select-accent w-full md:w-auto mx-2">
@@ -76,7 +64,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
                     </form>
                 </div>
 
-                <!-- Task Management Table -->
                 <div class="overflow-x-auto">
                     <table class="table w-full">
                         <thead>
@@ -99,7 +86,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
                                         <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
                                         <form method="post" action="delete_task.php" style="display:inline">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                            <button class="text-red-600">Delete</button>
+                                            <button type="submit" class="text-red-600">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -113,7 +100,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
                 <div class="modal">
                     <div class="modal-box">
                         <h3 class="font-bold text-lg mb-4">Add New Task</h3>
-                        <!-- Form submits to the same page -->
                         <form method="post" action="task_page.php">
                             <div class="mb-4">
                                 <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
@@ -140,17 +126,17 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
-                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
-                                <button type="submit" name="add_task" class="btn">Add Task</button>
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" />
+                                <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
                         </form>
                     </div>
                 </div>
+
             </main>
         </div>
 
-        <!-- Sidebar -->
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
             <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
@@ -161,7 +147,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
                 <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='/logout' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>
