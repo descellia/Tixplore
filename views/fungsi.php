@@ -1,5 +1,5 @@
 <?php
-require 'db.php';
+require '../config/db.php';
 
 function addTask($conn, $task_name, $status, $category, $due_date) {
     $stmt = $conn->prepare("INSERT INTO tasks (name, status, category, due_date) VALUES (?, ?, ?, ?)");

@@ -1,4 +1,9 @@
 <?php
+<<<<<<< Updated upstream
+=======
+session_start();
+require_once '../config/db.php';
+>>>>>>> Stashed changes
 require 'fungsi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,5 +1,6 @@
 <?php
 $host = 'localhost';
+<<<<<<< Updated upstream
 $db = 'nama_database';
 $user = 'root';
 $pass = '';
@@ -19,3 +20,15 @@ try {
 }
 
 ?>
+=======
+$user = 'root';
+$password = '';
+$database = 'todo_app';
+
+$conn = new mysqli($host, $user, $password, $database);
+
+if ($conn->connect_error) {
+    die('Database connection failed: ' . $conn->connect_error);
+}
+?>
+>>>>>>> Stashed changes
