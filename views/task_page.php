@@ -2,16 +2,13 @@
 require 'fungsi.php';
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-// Retrieve the user ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Handle new task creation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
         addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
@@ -20,9 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Filter and search tasks
+// Search and filter logic
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
+
+// Fetch tasks for the logged-in user
 $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 ?>
 
@@ -135,6 +134,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
                                 <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
@@ -166,15 +166,14 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 <?php
 include('db.php');
 
-// Handle adding a task to the database
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
-    // Get form data
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
+    // Get the form data
     $task_name = $_POST['task_name'];
     $status = $_POST['status'];
     $category = $_POST['category'];
     $due_date = $_POST['due_date'];
+    $user_id = $_POST['user_id']; // Get user_id from POST data
 
-    // Prepare SQL statement to insert new task with user_id
     $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
@@ -187,7 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     }
 }
 
-// Query to fetch tasks for the logged-in user
+// Fetching tasks for the specific user
 $sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
