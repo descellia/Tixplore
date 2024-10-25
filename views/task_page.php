@@ -43,7 +43,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                 <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
-                        <label for="new-task-modal" class="btn btn-accent">New Task</label>
+                        <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
                     <!-- Search and Filter Form -->
@@ -56,7 +56,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                             <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
                             <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
                         </select>
-                        <button type="submit" class="btn btn-accent">Search</button>
+                        <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded">Search</button>
                     </form>
                 </div>
 
