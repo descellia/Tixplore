@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($stmt->affected_rows > 0) {
             echo "Password successfully updated!";
-            header('Location: login.php?status=reset_success');
+            header('Location: /login?status=reset_success');
         } else {
             echo "Error updating password!";
         }

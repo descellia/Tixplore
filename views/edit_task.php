@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $due_date = $_POST['due_date'];
 
     if (updateTask($conn, $task_id, $task_name, $status, $category, $due_date)) {
-        header("Location: task_page.php");
+        header("Location: /task_page");
         exit;
     } else {
         echo "Error updating task.";

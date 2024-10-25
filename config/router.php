@@ -18,14 +18,12 @@ function router($path) {
     } else if($path === '/profile') {
         include 'views/profile.php';
 
-    } elseif (preg_match('/^\/eventdetails\/([a-zA-Z0-9_-]+)$/', $path, $matches)) {
-        $event_name = $matches[1]; 
-        include 'views/event_details.php';
+    } else if($path === '/logout') {
+        include 'views/auth/logout.php';
 
-    } else if ($path === '/eventdetails') {
-        include 'views/event_details.php';
-    }else if ($path === '/tes') {
-        include 'views/tes.php';
+    } else if($path === '/task_page') {
+        include 'views/task_page.php';
+
     }else {
         include 'views/404.php';
     }
