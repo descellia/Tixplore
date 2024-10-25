@@ -4,7 +4,7 @@ include('db.php');
 require 'fungsi.php';
 
 if (!isset($_SESSION['user_id'])) {
-    header("Location: views/auth/login.php");
+    header('Location: login.php');
     exit;
 }
 
@@ -24,11 +24,11 @@ $username = !empty($user['username']) ? $user['username'] : 'Guest';
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-function getFilteredTasksForToday($conn, $search, $filter_category) {
+function getFilteredTasksForToday($conn, $search, $filter_category, $user_id) {
     $today_start = date('Y-m-d 00:00:00');
     $today_end = date('Y-m-d 23:59:59');
 
-    $query = "SELECT * FROM tasks WHERE due_date BETWEEN ? AND ?";
+    $query = "SELECT * FROM tasks WHERE user_id = ? AND due_date BETWEEN ? AND ?";
 
     if (!empty($search)) {
         $query .= " AND name LIKE ?";
@@ -42,21 +42,21 @@ function getFilteredTasksForToday($conn, $search, $filter_category) {
 
     if (!empty($search) && !empty($filter_category)) {
         $search = "%$search%";
-        $stmt->bind_param('ssss', $today_start, $today_end, $search, $filter_category);
+        $stmt->bind_param('isss', $user_id, $today_start, $today_end, $search, $filter_category);
     } elseif (!empty($search)) {
         $search = "%$search%";
-        $stmt->bind_param('sss', $today_start, $today_end, $search);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end, $search);
     } elseif (!empty($filter_category)) {
-        $stmt->bind_param('sss', $today_start, $today_end, $filter_category);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end, $filter_category);
     } else {
-        $stmt->bind_param('ss', $today_start, $today_end);
+        $stmt->bind_param('iss', $user_id, $today_start, $today_end);
     }
 
     $stmt->execute();
     return $stmt->get_result();
 }
 
-$tasks = getFilteredTasksForToday($conn, $search, $filter_category);
+$tasks = getFilteredTasksForToday($conn, $search, $filter_category, $user_id);
 ?>
 
 <!DOCTYPE html>
@@ -161,40 +161,46 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const taskRows = document.querySelectorAll('#task-list tbody tr');
-            taskRows.forEach(row => {
-                const countdownCell = row.querySelector('.countdown');
-                const dueDateAttr = countdownCell.dataset.dueDate;
-                const status = row.querySelector('span').textContent.trim();
-                const dueDate = new Date(dueDateAttr);
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const taskRows = document.querySelectorAll('#task-list tbody tr');
+        taskRows.forEach(row => {
+            const countdownCell = row.querySelector('.countdown');
+            const dueDateAttr = countdownCell.dataset.dueDate;
+            const status = row.querySelector('span').textContent.trim();
+            const dueDate = new Date(dueDateAttr);
 
-                if (!dueDateAttr || isNaN(dueDate.getTime())) {
-                    countdownCell.textContent = 'No due date';
-                    return;
-                }
+            if (!dueDateAttr || isNaN(dueDate.getTime())) {
+                countdownCell.textContent = 'No due date';
+                return;
+            }
 
-                if (status === 'Done') {
-                    countdownCell.textContent = 'Finished';
-                    return;
-                }
+            if (status === 'Done') {
+                countdownCell.textContent = 'Finished';
+                return;
+            }
 
-                const countdown = setInterval(() => {
-                    const now = new Date();
-                    const timeDiff = dueDate - now;
+            const countdown = setInterval(() => {
+                const now = new Date();
+                const timeDiff = dueDate - now;
 
-                    if (timeDiff < 0) {
-                        countdownCell.textContent = 'Overdue';
-                        clearInterval(countdown);
+                if (timeDiff < 0) {
+                    countdownCell.textContent = 'Overdue';
+                    clearInterval(countdown);
+                } else {
+                    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    
+                    if (days > 0) {
+                        countdownCell.textContent = `${days}d ${hours}h ${minutes}m`;
                     } else {
-                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeDiff % (1000 * 60)) / (1000 * 60));
                         countdownCell.textContent = `${hours}h ${minutes}m`;
                     }
-                }, 1000);
-            });
+                }
+            }, 1000);
         });
-    </script>
+    });
+</script>
 </body>
 </html>
