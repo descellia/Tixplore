@@ -1,26 +1,59 @@
 <?php
-require 'fungsi.php';
 session_start();
+require_once 'db.php';
+$user_id = $_SESSION['user_id'] ?? null; // Get user_id from session, set to null if not available
 
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+// Check if user is logged in
+if (!$user_id) {
+    // Redirect to login page if not logged in
+    header("Location: login.php");
     exit();
 }
 
-$user_id = $_SESSION['user_id'];
+// Initialize variables for search and filter
+$search = $_GET['search'] ?? '';
+$filter_category = $_GET['filter_category'] ?? '';
 
+// Prepare the SQL query to fetch tasks for the logged-in user
+$query = "SELECT * FROM tasks WHERE user_id = ?";
+$params = [$user_id];
+
+// Add search functionality if search term is provided
+if (!empty($search)) {
+    $query .= " AND name LIKE ?";
+    $params[] = "%$search%";
+}
+
+// Add filter functionality if a category is selected
+if (!empty($filter_category)) {
+    $query .= " AND category = ?";
+    $params[] = $filter_category;
+}
+
+// Prepare and execute the statement
+$stmt = $db->prepare($query);
+$stmt->execute($params);
+
+// Fetch tasks for the user
+$tasks = $stmt->get_result();
+
+// Handle the form submission for adding a new task
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
-    addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
-    header('Location: task_page.php');
+    $task_name = $_POST['task_name'];
+    $status = $_POST['status'];
+    $category = $_POST['category'];
+    $due_date = $_POST['due_date'];
+
+    // Add task to the database with user_id
+    $stmt = $db->prepare("INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id); // Include user_id
+    $stmt->execute();
+    $stmt->close();
+    
+    // Redirect or refresh page after adding the task
+    header("Location: task_page.php");
     exit();
 }
-
-// Search and filter logic
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
-
-// Fetch tasks for the logged-in user
-$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 ?>
 
 <!DOCTYPE html>
@@ -43,12 +76,16 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
+            <!-- Main content here -->
             <main class="p-4 lg:p-8">
+
+                <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
                         <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
+                    <!-- Search and Filter Form -->
                     <form method="get" class="flex justify-end">
                         <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="input input-bordered input-accent w-full md:w-auto" />
                         <select name="filter_category" class="select select-bordered select-accent w-full md:w-auto mx-2">
@@ -64,6 +101,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                     </form>
                 </div>
 
+                <!-- Task Management Table -->
                 <div class="overflow-x-auto">
                     <table class="table w-full">
                         <thead>
@@ -86,7 +124,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                         <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
                                         <form method="post" action="delete_task.php" style="display:inline">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                            <button type="submit" class="text-red-600">Delete</button>
+                                            <button class="text-red-600">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -100,6 +138,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                 <div class="modal">
                     <div class="modal-box">
                         <h3 class="font-bold text-lg mb-4">Add New Task</h3>
+                        <!-- Form submits to the same page -->
                         <form method="post" action="task_page.php">
                             <div class="mb-4">
                                 <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
@@ -126,7 +165,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
-                                <input type="hidden" name="user_id" value="<?= $user_id ?>" />
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
                                 <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
@@ -137,6 +176,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
             </main>
         </div>
 
+        <!-- Sidebar -->
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
             <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
@@ -147,7 +187,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
                 <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='logout.php' class="text-gray-600 hover:text-gray-900">Logout</a></li>
             </ul>
         </div>
     </div>

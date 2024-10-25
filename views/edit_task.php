@@ -3,7 +3,7 @@ require 'fungsi.php';
 
 if (isset($_GET['id'])) {
     $task_id = $_GET['id'];
-    $task_result = getTaskById($conn, $task_id);
+    $task_result = getTaskById($db, $task_id);
     $task = $task_result->fetch_assoc();
 }
 
@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $category = $_POST['category'];
     $due_date = $_POST['due_date'];
 
-    if (updateTask($conn, $task_id, $task_name, $status, $category, $due_date)) {
-        header("Location: /task_page");
+    if (updateTask($db, $task_id, $task_name, $status, $category, $due_date)) {
+        header("Location: task_page.php");
         exit;
     } else {
         echo "Error updating task.";
