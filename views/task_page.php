@@ -14,14 +14,10 @@ if (!$user_id) {
 $search = $_GET['search'] ?? '';
 $filter_category = $_GET['filter_category'] ?? '';
 
-// Prepare the SQL query to fetch tasks for the logged-in user
-$query = "SELECT * FROM tasks WHERE user_id = ?";
-$params = [$user_id];
-
-// Add search functionality if search term is provided
-if (!empty($search)) {
-    $query .= " AND name LIKE ?";
-    $params[] = "%$search%";
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
+    addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
+    header('Location: task_page.php');
+    exit();
 }
 
 // Add filter functionality if a category is selected
@@ -76,16 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
-            <!-- Main content here -->
             <main class="p-4 lg:p-8">
-
-                <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
                         <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
-                    <!-- Search and Filter Form -->
                     <form method="get" class="flex justify-end">
                         <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="input input-bordered input-accent w-full md:w-auto" />
                         <select name="filter_category" class="select select-bordered select-accent w-full md:w-auto mx-2">
@@ -101,7 +93,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                     </form>
                 </div>
 
-                <!-- Task Management Table -->
                 <div class="overflow-x-auto">
                     <table class="table w-full">
                         <thead>
@@ -124,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                                         <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
                                         <form method="post" action="delete_task.php" style="display:inline">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                            <button class="text-red-600">Delete</button>
+                                            <button type="submit" class="text-red-600">Delete</button>
                                         </form>
                                     </td>
                                 </tr>
@@ -138,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                 <div class="modal">
                     <div class="modal-box">
                         <h3 class="font-bold text-lg mb-4">Add New Task</h3>
-                        <!-- Form submits to the same page -->
                         <form method="post" action="task_page.php">
                             <div class="mb-4">
                                 <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
@@ -165,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
-                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" />
                                 <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
@@ -176,7 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
             </main>
         </div>
 
-        <!-- Sidebar -->
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
             <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
