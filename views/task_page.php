@@ -17,9 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// Search and filter logic
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
+// Fetch tasks for the logged-in user
 $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 ?>
 
@@ -132,6 +134,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                 <input type="datetime-local" name="due_date" required class="input input-bordered w-full" />
                             </div>
                             <div class="modal-action">
+                                <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
                                 <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
@@ -169,6 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     $status = $_POST['status'];
     $category = $_POST['category'];
     $due_date = $_POST['due_date'];
+    $user_id = $_POST['user_id']; // Get user_id from POST data
 
     $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
@@ -182,6 +186,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     }
 }
 
+// Fetching tasks for the specific user
 $sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);

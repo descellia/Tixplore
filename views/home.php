@@ -3,19 +3,13 @@ session_start();
 include('db.php');
 require 'fungsi.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_task'])) {
-        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date']);
-    }
-}
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: views/auth/login.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$query = "SELECT profile_pic FROM users WHERE id = ?";
+$query = "SELECT profile_pic, username FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
@@ -25,7 +19,7 @@ $user = $result->fetch_assoc();
 $default_profile_pic = 'uploads/hmif_umn_logo.jpeg';
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : $default_profile_pic;
 
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+$username = !empty($user['username']) ? $user['username'] : 'Guest';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
