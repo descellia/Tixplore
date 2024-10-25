@@ -3,21 +3,37 @@ CREATE DATABASE todo_app;
 USE todo_app;
 
 CREATE TABLE tasks (
-         id INT AUTO_INCREMENT PRIMARY KEY,
-         name VARCHAR(255) NOT NULL,
-         category VARCHAR(30) NOT NULL,
-         status VARCHAR(50) NOT NULL,
-         due_date DATE NOT NULL
-        );
+  id int(11) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(30) NOT NULL,
+  status VARCHAR(50) NOT NULL,
+  due_date datetime NOT NULL,
+  user_id int(11) DEFAULT NULL
+);
 
-INSERT INTO tasks (name, status, category, due_date, user_id) VALUES
-('Belajar PHP', 'Not Started Yet', 'Education', '2024-11-01 12:00:00', 6),
-('Menyelesaikan Proyek', 'Working on it', 'Work', '2024-10-28 17:00:00', 6),
-('Olahraga', 'Done', 'Health', '2024-10-20 08:00:00', 7),
-('Membaca Buku', 'Stuck', 'Hobby', '2024-11-05 15:00:00', 7),
-('Perencanaan Keuangan', 'Not Started Yet', 'Finance', '2024-11-10 10:00:00', 6),
-('Mempersiapkan Presentasi', 'Working on it', 'Work', '2024-11-02 09:00:00', 7),
-('Rapat Tim', 'Done', 'Work', '2024-10-25 14:00:00', 6),
-('Yoga', 'Not Started Yet', 'Health', '2024-11-12 07:00:00', 7),
-('Perbaikan Bug', 'Stuck', 'Work', '2024-11-08 16:00:00', 6),
-('Kursus Online', 'Done', 'Education', '2024-10-30 18:00:00', 7);
+CREATE TABLE users (
+  id int(11) NOT NULL,
+  firstname VARCHAR(50) NOT NULL,
+  lastname VARCHAR(50) DEFAULT NULL,
+  username VARCHAR(50) NOT NULL,
+  birthdate date NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  profile_pic VARCHAR(255) DEFAULT 'uploads/default.png'
+);
+
+ALTER TABLE tasks
+  ADD PRIMARY KEY (id),
+  ADD KEY tasks_ibfk_1 (user_id);
+
+ALTER TABLE users
+  ADD PRIMARY KEY (id),
+  ADD UNIQUE KEY username (username),
+  ADD UNIQUE KEY email (email);
+
+ALTER TABLE tasks
+  MODIFY id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+ALTER TABLE users
+  MODIFY id int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+COMMIT;
