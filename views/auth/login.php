@@ -18,8 +18,24 @@
                 <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
                 <input type="password" name="password" id="password" required class="mt-1 p-2 w-full border rounded-md">
             </div>
+<<<<<<< Updated upstream
             <div class="flex justify-center">
                 <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Login</button>
+=======
+
+            <div class="form-control">
+                <label class="label text-gray-700">Password</label>
+                <input type="password" name="password" placeholder="Enter your password" class="input" required />
+            </div>
+
+            <div class="flex justify-between mt-4 text-sm text-gray-500">
+                <a href='/forget_password' class="link">Forgot password?</a>
+                <a href='/register' class="link">Don't have an account? Register</a>
+            </div>
+
+            <div class="card-actions justify-center mt-6">
+                <button type="submit" class="btn">Login</button>
+>>>>>>> Stashed changes
             </div>
         </form>
     </div>
