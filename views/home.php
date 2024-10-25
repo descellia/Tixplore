@@ -1,5 +1,4 @@
 <?php
-session_start();
 include('db.php');
 require 'fungsi.php';
 
@@ -87,7 +86,7 @@ $tasks = getFilteredTasksForToday($db, $user_id, $search, $filter_category);
                     <h2 class="text-3xl font-bold text-gray-900">Welcome, <?= htmlspecialchars($username) ?>!</h2>
                     <div class="flex items-center space-x-4">
                         <!-- Avatar with link to profile.php -->
-                        <a href='profile.php' class="avatar">
+                        <a href='/profile' class="avatar">
                             <div class="w-10 rounded-full">
                                 <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture">
                             </div>
@@ -152,10 +151,10 @@ $tasks = getFilteredTasksForToday($db, $user_id, $search, $filter_category);
                     <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
-                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
-                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
-                <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='/home' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='/task_page' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='/profile' class="text-gray-600 hover:text-gray-900">Profile</a></li>
+                <li><a href='/logout' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>

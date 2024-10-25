@@ -152,7 +152,7 @@
                 </div>
             <?php elseif (isset($_GET['message']) && $_GET['message'] === 'registered'): ?>
                 <div class="text-green-500 mb-4 text-center">
-                    <span>Registration successful! You can now <a href="login.php" class="text-blue-500 underline">login</a>.</span>
+                    <span>Registration successful! You can now <a href="/login" class="text-blue-500 underline">login</a>.</span>
                 </div>
             <?php endif; ?>
 
@@ -201,7 +201,7 @@
             </div>
 
             <button type="submit" class="btn">Register</button>
-            <button type="button" class="back-btn" onclick="window.location.href='login.php';">Back to Home</button> <!-- Back to Home Button -->
+            <button type="button" class="back-btn" onclick="window.location.href='/login';">Back to Home</button> <!-- Back to Home Button -->
 
         </form>
 

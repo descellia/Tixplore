@@ -1,5 +1,4 @@
 <?php
-session_start();
 include('db.php');
 
 if (!isset($_SESSION['user_id'])) {
@@ -150,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="alert">Profile updated successfully!</div>
     <?php endif; ?>
 
-    <form action="profile.php" method="POST" enctype="multipart/form-data">
+    <form action="/profile" method="POST" enctype="multipart/form-data">
         <img src="<?php echo htmlspecialchars($user['profile_pic']); ?>" alt="Profile Picture" class="profile-img">
 
         <label>First Name</label>
@@ -175,7 +174,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="file" name="profile_pic">
 
         <button type="submit" class="btn">Update Profile</button>
-        <button type="button" class="btn" onclick="window.location.href='home.php'" style="background-color: #e2e8f0; color: #4a5568;">Cancel</button>
+        <button type="button" class="btn" onclick="window.location.href='/'" style="background-color: #e2e8f0; color: #4a5568;">Cancel</button>
     </form>
 </div>
 

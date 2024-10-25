@@ -156,8 +156,8 @@
             </div>
 
             <div class="flex justify-between mt-4 text-sm text-gray-500">
-                <a href='forget_password.php' class="link">Forgot password?</a>
-                <a href='register.php' class="link">Don't have an account? Register</a>
+                <a href='/forget_password' class="link">Forgot password?</a>
+                <a href='/register' class="link">Don't have an account? Register</a>
             </div>
 
             <div class="card-actions justify-center mt-6">

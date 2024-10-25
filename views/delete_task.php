@@ -5,5 +5,5 @@ if (isset($_POST['task_id'])) {
     deleteTask($db, $_POST['task_id']);
 }
 
-header('Location: task_page.php');
+header('Location: /task_page');
 ?>

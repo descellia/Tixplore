@@ -140,7 +140,7 @@
 
             <div class="card-actions justify-center mt-6">
                 <button type="submit" class="btn">Reset Password</button>
-                <button type="button" class="back-btn" onclick="window.location.href='login.php';">Back to Home</button>
+                <button type="button" class="back-btn" onclick="window.location.href='/login';">Back to Home</button>
             </div>
         </form>
     </div>
