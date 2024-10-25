@@ -1,14 +1,19 @@
 <?php
-require 'fungsi.php';
+require_once 'fungsi.php'; // Ensure this includes getFilteredTasks function
+include('db.php');
+
 session_start();
 
+// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
+// Get the logged-in user's ID
 $user_id = $_SESSION['user_id'];
 
+// If the form is submitted to add a task
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
         addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
@@ -21,9 +26,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-// Fetch tasks for the logged-in user
-$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
+// Fetch tasks for the logged-in user, filtered by category and search keyword
+$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id); // Now it calls the function from fungsi.php
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -135,13 +141,12 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                             </div>
                             <div class="modal-action">
                                 <input type="hidden" name="user_id" value="<?= $user_id ?>" /> <!-- Add user_id as hidden input -->
-                                <button type="submit" name="add_task" class="btn btn-accent">Add Task</button>
+                                <button type="submit" name="add_task" class="btn">Add Task</button>
                                 <label for="new-task-modal" class="btn">Cancel</label>
                             </div>
                         </form>
                     </div>
                 </div>
-
             </main>
         </div>
 
@@ -156,41 +161,9 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
                 <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='/logout' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>
 </body>
 </html>
-
-<?php
-include('db.php');
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
-    // Get the form data
-    $task_name = $_POST['task_name'];
-    $status = $_POST['status'];
-    $category = $_POST['category'];
-    $due_date = $_POST['due_date'];
-    $user_id = $_POST['user_id']; // Get user_id from POST data
-
-    $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
-
-    if ($stmt->execute()) {
-        header("Location: task_page.php");
-        exit();
-    } else {
-        echo "Error: " . $stmt->error;
-    }
-}
-
-// Fetching tasks for the specific user
-$sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$tasks = $stmt->get_result();
-
-?>

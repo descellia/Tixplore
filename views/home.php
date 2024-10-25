@@ -2,13 +2,21 @@
 include('db.php');
 require 'fungsi.php';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_task'])) {
+        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
+        exit();
+    }
+}
+
+
 if (!isset($_SESSION['user_id'])) {
     header("Location: views/auth/login.php");
     exit;
 }
 
 $user_id = $_SESSION['user_id'];
-$query = "SELECT profile_pic, username FROM users WHERE id = ?";
+$query = "SELECT profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
@@ -18,7 +26,7 @@ $user = $result->fetch_assoc();
 $default_profile_pic = 'uploads/hmif_umn_logo.jpeg';
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : $default_profile_pic;
 
-$username = !empty($user['username']) ? $user['username'] : 'Guest';
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
@@ -152,10 +160,10 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                     <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
-                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
-                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
-                <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
+                <li><a href='/UTS-WEBPROG-LAB/views/home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='/UTS-WEBPROG-LAB/views/task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='/UTS-WEBPROG-LAB/views/profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
+                <li><a href='/UTS-WEBPROG-LAB/views/auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>
