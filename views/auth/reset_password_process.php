@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     // If the request is not POST, you may want to handle it appropriately
     // For example, redirecting to the reset_password page with an error message
-    header("Location: /reset_password?error=invalid_request");
+    header("Location: reset_password.php?error=invalid_request");
     exit();
 }
 ?>

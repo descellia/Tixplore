@@ -1,11 +1,12 @@
 <?php
+session_start();
 require_once 'db.php';
 $user_id = $_SESSION['user_id'] ?? null; // Get user_id from session, set to null if not available
 
 // Check if user is logged in
 if (!$user_id) {
     // Redirect to login page if not logged in
-    header("Location: /login");
+    header("Location: login.php");
     exit();
 }
 
@@ -50,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
     $stmt->close();
     
     // Redirect or refresh page after adding the task
-    header("Location: /task_page");
+    header("Location: task_page.php");
     exit();
 }
 ?>
@@ -120,8 +121,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                                     <td><?= htmlspecialchars($task['category']) ?></td>
                                     <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($task['due_date']))) ?></td>
                                     <td>
-                                        <a href="/edit_task?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
-                                        <form method="post" action="/delete_task" style="display:inline">
+                                        <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
+                                        <form method="post" action="delete_task.php" style="display:inline">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
                                             <button class="text-red-600">Delete</button>
                                         </form>
@@ -138,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                     <div class="modal-box">
                         <h3 class="font-bold text-lg mb-4">Add New Task</h3>
                         <!-- Form submits to the same page -->
-                        <form method="post" action="/task_page>
+                        <form method="post" action="task_page.php">
                             <div class="mb-4">
                                 <input type="text" name="task_name" placeholder="Task name" required class="input input-bordered w-full" />
                             </div>
@@ -183,10 +184,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_task'])) {
                     <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
-                <li><a href='/home' class="text-gray-600 hover:text-gray-900">Home</a></li>
-                <li><a href='/task_page' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
-                <li><a href='/profile' class="text-gray-600 hover:text-gray-900">Profile</a></li>
-                <li><a href='/logout' class="text-gray-600 hover:text-gray-900">Logout</a></li>
+                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
+                <li><a href='logout.php' class="text-gray-600 hover:text-gray-900">Logout</a></li>
             </ul>
         </div>
     </div>

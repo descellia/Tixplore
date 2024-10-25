@@ -142,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 });
             </script>
             <button type="submit">Update Task</button>
-            <button type="button" onclick="window.location.href='/task_page'" style="background-color: #e2e8f0; color: #4a5568;">Cancel</button>
+            <button type="button" onclick="window.location.href='task_page.php'" style="background-color: #e2e8f0; color: #4a5568;">Cancel</button>
         </form>
     </div>
 </body>

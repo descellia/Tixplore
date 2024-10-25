@@ -15,24 +15,17 @@ function router($path) {
     } else if ($path === '/register') {
         include 'views/auth/register.php';
 
-    } else if ($path === '/reset_password') {
-        include 'views/auth/reset_password.php';
-
     } else if($path === '/profile') {
         include 'views/profile.php';
 
-    } else if($path === '/logout') {
-        include 'views/auth/logout.php';
+    } elseif (preg_match('/^\/eventdetails\/([a-zA-Z0-9_-]+)$/', $path, $matches)) {
+        $event_name = $matches[1]; 
+        include 'views/event_details.php';
 
-    } else if($path === '/task_page') {
-        include 'views/task_page.php';
-    
-    } else if($path === '/edit_task') {
-        include 'views/edit_task.php';
-    
-    } else if($path === '/delete_task') {
-        include 'views/delete_task';
-
+    } else if ($path === '/eventdetails') {
+        include 'views/event_details.php';
+    }else if ($path === '/tes') {
+        include 'views/tes.php';
     }else {
         include 'views/404.php';
     }
