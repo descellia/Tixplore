@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->bind_param('sssssssi', $username, $email, $hashed_password, $firstname, $lastname, $birthdate, $profile_pic, $user_id);
 
     if ($stmt->execute()) {
-        header("Location: profile.php?message=success");
+        header("Location: home.php?message=profile_updated");
         exit;
     } else {
         echo "Error updating profile.";

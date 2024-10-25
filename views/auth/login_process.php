@@ -2,6 +2,9 @@
 session_start();
 require_once 'config.php';
 
+$_SESSION['user_id'] = $user['id'];
+
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];

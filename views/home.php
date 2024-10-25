@@ -1,4 +1,6 @@
 <?php
+session_start();
+include('db.php');
 require 'fungsi.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -7,14 +9,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+if (!isset($_SESSION['user_id'])) {
+    header("Location: views/auth/login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id'];
+$query = "SELECT profile_pic FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+$default_profile_pic = 'uploads/hmif_umn_logo.jpeg';
+$profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : $default_profile_pic;
+
+// Fetch session data for the username
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest'; // Default to 'Guest' if not logged in
+
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
 function getFilteredTasksForToday($conn, $search, $filter_category) {
-    $today_start = date('Y-m-d 00:00:00');  // Start of today (00:00)
-    $today_end = date('Y-m-d 23:59:59');    // End of today (23:59)
+    $today_start = date('Y-m-d 00:00:00');
+    $today_end = date('Y-m-d 23:59:59');
 
-    // Base query to fetch tasks between today 00:00 and 23:59
     $query = "SELECT * FROM tasks WHERE due_date BETWEEN ? AND ?";
 
     if (!empty($search)) {
@@ -27,7 +47,6 @@ function getFilteredTasksForToday($conn, $search, $filter_category) {
 
     $stmt = $conn->prepare($query);
 
-    // Binding parameters based on search and category filters
     if (!empty($search) && !empty($filter_category)) {
         $search = "%$search%";
         $stmt->bind_param('ssss', $today_start, $today_end, $search, $filter_category);
@@ -44,10 +63,8 @@ function getFilteredTasksForToday($conn, $search, $filter_category) {
     return $stmt->get_result();
 }
 
-// Fetch tasks that are due today only
 $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
@@ -74,32 +91,15 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
             <!-- Page content here -->
             <main class="p-4 lg:p-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
+                    <!-- Personalized Welcome Message -->
+                    <h2 class="text-3xl font-bold text-gray-900">Welcome, <?= htmlspecialchars($username) ?>!</h2>
                     <div class="flex items-center space-x-4">
-                        <div class="avatar" onclick="window.location.href='profile.php'">
+                        <!-- Avatar with link to profile.php -->
+                        <a href="/UTS-WEBPROG-LAB/views/profile.php" class="avatar">
                             <div class="w-10 rounded-full">
-                                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture">
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Calendar and Daily Quote Section -->
-                <div class="flex gap-4 mb-8">
-                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
-                        <div class="p-4 flex-1">
-                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Calendar</h3>
-                            <div id="dycalendar" class="border-2 border-gray-200 p-4 h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                                <span>Loading Calendar...</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
-                        <div class="card-body">
-                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Daily Quote</h3>
-                            <p id="dailyQuote" class="text-xl italic text-gray-600"></p>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
@@ -174,46 +174,32 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
             taskRows.forEach(row => {
                 const countdownCell = row.querySelector('.countdown');
                 const dueDateAttr = countdownCell.dataset.dueDate;
-                const status = row.querySelector('span').textContent.trim(); // Get task status
-                const dueDate = new Date(dueDateAttr); // Convert due date to Date object
+                const status = row.querySelector('span').textContent.trim();
+                const dueDate = new Date(dueDateAttr);
 
-                // Check if the dueDateAttr is valid, else skip
                 if (!dueDateAttr || isNaN(dueDate.getTime())) {
                     countdownCell.textContent = 'No due date';
-                    return; // Skip this row if no valid due date
+                    return;
                 }
 
-                // If the task status is "Done", mark it as finished and skip countdown
                 if (status === 'Done') {
                     countdownCell.textContent = 'Finished';
-                    return; // Exit early if the task is done
+                    return;
                 }
 
-                // Proceed with countdown for non-Done tasks
                 const countdown = setInterval(() => {
                     const now = new Date();
                     const timeDiff = dueDate - now;
 
                     if (timeDiff < 0) {
-                        // If the task is overdue and not marked as done, show "Overdue"
                         countdownCell.textContent = 'Overdue';
-                        clearInterval(countdown); // Stop the countdown
+                        clearInterval(countdown);
                     } else {
-                        // Calculate hours and minutes remaining
                         const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-                        countdownCell.textContent = `${hours}h ${minutes}m left`;
+                        const minutes = Math.floor((timeDiff % (1000 * 60)) / (1000 * 60));
+                        countdownCell.textContent = `${hours}h ${minutes}m`;
                     }
-                }, 1000); 
-            });
-
-            // Initialize the calendar
-            const calendar = new DyCalendar('#dycalendar', {
-                theme: 'default',
-                date: new Date(),
-                onClick: function (date) {
-                    alert('Clicked date: ' + date);
-                }
+                }, 1000);
             });
         });
     </script>

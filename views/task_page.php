@@ -1,18 +1,27 @@
 <?php
 require 'fungsi.php';
+session_start();
+
+// Redirect to login page if not logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit();
+}
+
+$user_id = $_SESSION['user_id'];  // Get the logged-in user's ID
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
     if (isset($_POST['add_task'])) {
-        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date']);
+        addTask($conn, $_POST['task_name'], $_POST['status'], $_POST['category'], $_POST['due_date'], $user_id);
+        header('Location: task_page.php');
+        exit();
     }
 }
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
-
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-$tasks = getFilteredTasks($conn, $search, $filter_category);
+$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);  // Pass user_id to filter tasks
 ?>
 
 <!DOCTYPE html>
@@ -41,7 +50,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                 <!-- Button for adding a new task -->
                 <div class="flex justify-between mb-4">
                     <div>
-                        <label for="new-task-modal" class="btn btn-accent">New Task</label>
+                        <label for="new-task-modal" class="bg-gray-600 text-white px-4 py-2 rounded cursor-pointer inline-block">New Task</label>
                     </div>
 
                     <!-- Search and Filter Form -->
@@ -56,7 +65,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                             <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
                             <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
                         </select>
-                        <button type="submit" class="btn btn-accent">Search</button>
+                        <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded">Search</button>
                     </form>
                 </div>
 
@@ -86,9 +95,6 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                                             <button class="text-red-600">Delete</button>
                                         </form>
                                     </td>
-                                </tr>
-                                <tr class="bg-gray-50 hover:bg-gray-200">
-                                    <!-- Repeat the row content for each task, alternating classes -->
                                 </tr>
                             <?php endwhile; ?>
                         </tbody>
@@ -141,11 +147,8 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
             <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
-                <!-- Sidebar content here -->
                 <li class="mb-4 flex flex-col items-center">
-                    <!-- Centered and larger Todora text -->
                     <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
-                    <!-- Non-clickable border -->
                     <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
                 </li>
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
@@ -170,23 +173,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     $category = $_POST['category'];
     $due_date = $_POST['due_date'];
 
-    // Insert the new task into the database
-    $sql = "INSERT INTO tasks (name, status, category, due_date) VALUES (?, ?, ?, ?)";
+    // Insert the new task into the database with user_id
+    $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $task_name, $status, $category, $due_date);
-    
+    $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
+
     if ($stmt->execute()) {
-        // If the insertion is successful, redirect back to the same page
         header("Location: task_page.php");
         exit();
     } else {
-        // If there's an error, you can handle it here (optional)
         echo "Error: " . $stmt->error;
     }
 }
 
-// Fetch tasks from the database to display in the table
-$sql = "SELECT * FROM tasks ORDER BY due_date ASC";
-$tasks = $conn->query($sql);
+// Fetch tasks specific to the logged-in user
+$sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$tasks = $stmt->get_result();
 
 ?>
