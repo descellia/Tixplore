@@ -31,45 +31,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdn.tailwindcss.com">
     <style>
         body {
-            background-color: #f3f4f6; /* Light gray background */
-            font-family: 'Arial', sans-serif; /* Custom font */
+            background-color: #f3f4f6;
+            font-family: 'Arial', sans-serif;
         }
         .container {
-            background-color: #ffffff; /* White background for the form */
-            border-radius: 12px; /* More pronounced rounded corners */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Enhanced shadow for depth */
-            padding: 30px; /* Increased padding for a spacious layout */
-            margin-top: 50px; /* Margin to separate from top */
-            max-width: 600px; /* Limit the width of the container */
-            margin-left: auto; /* Center the container */
-            margin-right: auto; /* Center the container */
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 50px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         h2 {
-            color: #1d4ed8; /* Bright blue color for heading */
-            text-align: center; /* Center the heading */
-            margin-bottom: 20px; /* Space below the heading */
-            font-weight: bold; /* Bold heading */
+            color: #1d4ed8;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
         input, select {
-            border: 1px solid #d1d5db; /* Light border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 12px; /* Padding for input fields */
-            width: 100%; /* Full width */
-            margin-bottom: 20px; /* Space below each input */
-            transition: border-color 0.3s; /* Smooth border color transition */
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            width: 100%;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
         }
         input:focus, select:focus {
-            border-color: #1d4ed8; /* Blue border on focus */
-            outline: none; /* Remove default outline */
-            box-shadow: 0 0 5px rgba(29, 78, 216, 0.5); /* Subtle shadow on focus */
+            border-color: #1d4ed8;
+            outline: none;
+            box-shadow: 0 0 5px rgba(29, 78, 216, 0.5);
         }
         button {
-            background-color: #1d4ed8; /* Blue background for button */
-            color: white; /* White text for button */
-            padding: 12px 20px; /* Padding for button */
-            border: none; /* No border */
-            border-radius: 8px; /* Rounded corners for button */
-            cursor: pointer; /* Pointer cursor on hover */
+            background-color: #1d4ed8;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
             font-size: 16px;
             display: block;

@@ -2,13 +2,12 @@
 require 'fungsi.php';
 session_start();
 
-// Redirect to login page if not logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit();
 }
 
-$user_id = $_SESSION['user_id'];  // Get the logged-in user's ID
+$user_id = $_SESSION['user_id'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_task'])) {
@@ -21,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
 
-$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);  // Pass user_id to filter tasks
+$tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
 ?>
 
 <!DOCTYPE html>
@@ -162,10 +161,8 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);  // Pass 
 </html>
 
 <?php
-// Include your database connection
 include('db.php');
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     // Get the form data
     $task_name = $_POST['task_name'];
@@ -173,7 +170,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     $category = $_POST['category'];
     $due_date = $_POST['due_date'];
 
-    // Insert the new task into the database with user_id
     $sql = "INSERT INTO tasks (name, status, category, due_date, user_id) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ssssi", $task_name, $status, $category, $due_date, $user_id);
@@ -186,7 +182,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_task'])) {
     }
 }
 
-// Fetch tasks specific to the logged-in user
 $sql = "SELECT * FROM tasks WHERE user_id = ? ORDER BY due_date ASC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);

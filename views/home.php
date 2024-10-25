@@ -25,8 +25,7 @@ $user = $result->fetch_assoc();
 $default_profile_pic = 'uploads/hmif_umn_logo.jpeg';
 $profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : $default_profile_pic;
 
-// Fetch session data for the username
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest'; // Default to 'Guest' if not logged in
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 $filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
@@ -95,7 +94,7 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                     <h2 class="text-3xl font-bold text-gray-900">Welcome, <?= htmlspecialchars($username) ?>!</h2>
                     <div class="flex items-center space-x-4">
                         <!-- Avatar with link to profile.php -->
-                        <a href="/UTS-WEBPROG-LAB/views/profile.php" class="avatar">
+                        <a href='profile.php' class="avatar">
                             <div class="w-10 rounded-full">
                                 <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture">
                             </div>
