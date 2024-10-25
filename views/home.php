@@ -73,38 +73,16 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
         <div class="drawer-content flex flex-col">
             <!-- Page content here -->
             <main class="p-4 lg:p-8">
-                <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
-                    <div class="flex items-center space-x-4">
-                        <div class="form-control">
-                            <input type="text" placeholder="Search" name="search" class="input input-bordered input-accent w-24 md:w-auto" />
-                        </div>
-                        <div class="avatar">
-                            <div class="w-10 rounded-full">
-                                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
-                            </div>
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Welcome, Dominica!</h2>
+                <div class="flex items-center space-x-4">
+                    <div class="avatar">
+                        <div class="w-10 rounded-full">
+                            <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
                         </div>
                     </div>
                 </div>
-
-                <!-- Calendar and Daily Quote Section -->
-                <div class="flex gap-4 mb-8">
-                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
-                        <div class="p-4 flex-1">
-                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Calendar</h3>
-                            <div id="dycalendar" class="border-2 border-gray-200 p-4 h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                                <span>Loading Calendar...</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card bg-white border border-gray-200 rounded-lg flex-1">
-                        <div class="card-body">
-                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Daily Quote</h3>
-                            <p id="dailyQuote" class="text-xl italic text-gray-600"></p>
-                        </div>
-                    </div>
-                </div>
+            </div>
 
                 <!-- Today's Tasks Section -->
                 <div class="card bg-white border border-gray-200 rounded-lg mb-8">
@@ -208,14 +186,6 @@ $tasks = getFilteredTasksForToday($conn, $search, $filter_category);
                 }, 1000); 
             });
 
-            // Initialize the calendar
-            const calendar = new DyCalendar('#dycalendar', {
-                theme: 'default',
-                date: new Date(),
-                onClick: function (date) {
-                    alert('Clicked date: ' + date);
-                }
-            });
         });
     </script>
 </body>
