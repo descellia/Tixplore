@@ -70,27 +70,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border: none; /* No border */
             border-radius: 8px; /* Rounded corners for button */
             cursor: pointer; /* Pointer cursor on hover */
-            transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
-            font-size: 16px; /* Slightly larger text for button */
-            display: block; /* Center button */
-            width: 100%; /* Full width */
-            margin-top: 10px; /* Space above button */
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
         }
         button:hover {
-            background-color: #2563eb; /* Darker blue on hover */
-            transform: translateY(-2px); /* Lift effect on hover */
+            background-color: #2563eb;
+            transform: translateY(-2px);
         }
         .countdown {
-            font-weight: bold; /* Bold countdown text */
-            color: #e53e3e; /* Red color for countdown */
-            margin-top: 10px; /* Space above countdown */
-            text-align: center; /* Center countdown text */
+            font-weight: bold;
+            color: #e53e3e;
+            margin-top: 10px;
+            text-align: center;
         }
         .due-date {
-            font-style: italic; /* Italic for due date */
-            color: #6b7280; /* Gray color for due date */
-            text-align: center; /* Center due date text */
-            margin-bottom: 10px; /* Space below due date */
+            font-style: italic;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 10px;
         }
     </style>
 </head>

@@ -151,6 +151,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category);
                 <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
                 <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
                 <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
+                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>
