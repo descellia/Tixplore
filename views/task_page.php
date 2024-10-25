@@ -84,7 +84,7 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
                                     <td><?= htmlspecialchars(date('Y-m-d H:i', strtotime($task['due_date']))) ?></td>
                                     <td>
                                         <a href="edit_task.php?id=<?= htmlspecialchars($task['id']) ?>" class="text-blue-600">Edit</a>
-                                        <form method="post" action="delete_task.php" style="display:inline">
+                                        <form method="post" action="delete_task.php" style="display:inline" onsubmit="return confirmDelete();">
                                             <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
                                             <button type="submit" class="text-red-600">Delete</button>
                                         </form>
@@ -152,4 +152,11 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $user_id);
         </div>
     </div>
 </body>
+
+<script>
+    function confirmDelete() {
+        return confirm('Are you sure you want to delete this task? This action cannot be undone.');
+    }
+</script>
+
 </html>
