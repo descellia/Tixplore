@@ -1,12 +1,62 @@
 <?php
+session_start();
+include('db.php');
 require 'fungsi.php';
 
-// Search and filter logic
-$search = isset($_GET['search']) ? $_GET['search'] : '';
-$filter_category = isset($_GET['category']) ? $_GET['category'] : '';
-$filter_status = isset($_GET['status']) ? $_GET['status'] : '';
+if (!isset($_SESSION['user_id'])) {
+    header("Location: views/auth/login.php");
+    exit;
+}
 
-$tasks = getFilteredTasks($conn, $search, $filter_category, $filter_status); // Fetch filtered tasks
+$user_id = $_SESSION['user_id'];
+$query = "SELECT profile_pic, username FROM users WHERE id = ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+$default_profile_pic = 'uploads/hmif_umn_logo.jpeg';
+$profile_pic = !empty($user['profile_pic']) ? $user['profile_pic'] : $default_profile_pic;
+
+$username = !empty($user['username']) ? $user['username'] : 'Guest';
+
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+$filter_category = isset($_GET['filter_category']) ? $_GET['filter_category'] : '';
+
+function getFilteredTasksForToday($conn, $search, $filter_category) {
+    $today_start = date('Y-m-d 00:00:00');
+    $today_end = date('Y-m-d 23:59:59');
+
+    $query = "SELECT * FROM tasks WHERE due_date BETWEEN ? AND ?";
+
+    if (!empty($search)) {
+        $query .= " AND name LIKE ?";
+    }
+
+    if (!empty($filter_category)) {
+        $query .= " AND category = ?";
+    }
+
+    $stmt = $conn->prepare($query);
+
+    if (!empty($search) && !empty($filter_category)) {
+        $search = "%$search%";
+        $stmt->bind_param('ssss', $today_start, $today_end, $search, $filter_category);
+    } elseif (!empty($search)) {
+        $search = "%$search%";
+        $stmt->bind_param('sss', $today_start, $today_end, $search);
+    } elseif (!empty($filter_category)) {
+        $stmt->bind_param('sss', $today_start, $today_end, $filter_category);
+    } else {
+        $stmt->bind_param('ss', $today_start, $today_end);
+    }
+
+    $stmt->execute();
+    return $stmt->get_result();
+}
+
+$tasks = getFilteredTasksForToday($conn, $search, $filter_category);
 ?>
 
 <!DOCTYPE html>
@@ -15,174 +65,136 @@ $tasks = getFilteredTasks($conn, $search, $filter_category, $filter_status); // 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/daisyui@3.5.0/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/css/dycalendar.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/dycalendarjs@2.0.0/js/dycalendar.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/main.min.js"></script>
     <title>Todora - Task Management</title>
     <style>
         .status-Done { background-color: #3EE917; color: white; }
-        .status-Not { background-color: #0e0c0c; color: white; }
+        .status-Not { background-color: #0E0C0C; color: white; }
         .status-Stuck { background-color: #EF4444; color: white; }
         .status-Working { background-color: #FBBF24; color: white; }
     </style>
 </head>
-<body class="bg-base-100 text-base-content">
+
+<body class="bg-gray-100 text-gray-800">
     <div class="drawer lg:drawer-open">
         <input id="my-drawer" type="checkbox" class="drawer-toggle" />
         <div class="drawer-content flex flex-col">
+            <!-- Page content here -->
             <main class="p-4 lg:p-8">
                 <div class="flex justify-between items-center mb-8">
-                    <h2 class="text-3xl font-bold">Welcome, Dominica!</h2>
+                    <!-- Personalized Welcome Message -->
+                    <h2 class="text-3xl font-bold text-gray-900">Welcome, <?= htmlspecialchars($username) ?>!</h2>
                     <div class="flex items-center space-x-4">
-                        <div class="form-control">
-                            <input type="text" name="search" placeholder="Search" value="<?= htmlspecialchars($search) ?>" class="input input-bordered w-24 md:w-auto" />
-                        </div>
-                        <div class="avatar">
+                        <!-- Avatar with link to profile.php -->
+                        <a href='profile.php' class="avatar">
                             <div class="w-10 rounded-full">
-                                <img src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                                <img src="<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture">
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
-                <!-- Calendar Section with FullCalendar Integration -->
-                <div class="card bg-base-100 shadow-xl mb-8">
+                <!-- Today's Tasks Section -->
+                <div class="card bg-white border border-gray-200 rounded-lg mb-8">
                     <div class="card-body">
-                        <h3 class="card-title">Calendar</h3>
-                        <div id="calendar" class="mt-4"></div>
-                    </div>
-                </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Your Tasks for Today</h3>
 
-                <!-- Tasks Section -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <h3 class="card-title mb-4">Today's Tasks</h3>
-                            <!-- Search and Filter -->
-                            <form method="get" class="mb-4 flex justify-between">
-                                <input type="text" name="search" placeholder="Search tasks..." value="<?= htmlspecialchars($search) ?>" class="border rounded px-2 py-1 mx-2">
-                                
-                                <select name="category" class="border rounded px-2 py-1 mx-2">
-                                    <option value="">All Categories</option>
-                                    <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
-                                    <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
-                                    <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
-                                    <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
-                                </select>
-                                
-                                <select name="status" class="border rounded px-2 py-1 mx-2">
-                                    <option value="">All Status</option>
-                                    <option value="Done" <?= $filter_status == 'Done' ? 'selected' : '' ?>>Done</option>
-                                    <option value="Not Started Yet" <?= $filter_status == 'Not Started Yet' ? 'selected' : '' ?>>Not started yet</option>
-                                    <option value="Stuck" <?= $filter_status == 'Stuck' ? 'selected' : '' ?>>Stuck</option>
-                                    <option value="Working on it" <?= $filter_status == 'Working on it' ? 'selected' : '' ?>>Working on it</option>
-                                </select>
+                        <!-- Search and Filter Form -->
+                        <form method="get" class="mb-4 flex justify-end">
+                            <input type="text" name="search" placeholder="Search task..." value="<?= htmlspecialchars($search) ?>" class="border rounded px-2 py-1">
+                            <select name="filter_category" class="border rounded px-2 py-1 mx-2">
+                                <option value="">All Categories</option>
+                                <option value="Hobby" <?= $filter_category == 'Hobby' ? 'selected' : '' ?>>Hobby</option>
+                                <option value="Work" <?= $filter_category == 'Work' ? 'selected' : '' ?>>Work</option>
+                                <option value="Personal" <?= $filter_category == 'Personal' ? 'selected' : '' ?>>Personal</option>
+                                <option value="Education" <?= $filter_category == 'Education' ? 'selected' : '' ?>>Education</option>
+                                <option value="Finance" <?= $filter_category == 'Finance' ? 'selected' : '' ?>>Finance</option>
+                                <option value="Health" <?= $filter_category == 'Health' ? 'selected' : '' ?>>Health</option>
+                            </select>
+                            <button type="submit" class="bg-gray-600 text-white px-4 py-2 rounded">Search</button>
+                        </form>
 
-                                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded mx-2">Filter</button>
-                            </form>
-
-                            <!-- Display tasks -->
-                            <div class="mt-4" id="task-list">
-                                <table class="w-full mt-4">
+                        <!-- Task Content -->
+                        <div id="task-list">
+                            <div class="overflow-x-auto">
+                                <table class="table w-full">
                                     <thead>
-                                        <tr class="text-left text-gray-600">
-                                            <th class="py-2">Task</th>
-                                            <th class="py-2">Status</th>
-                                            <th class="py-2">Category</th>
-                                            <th class="py-2">Due date</th>
-                                            <th class="py-2">Actions</th>
+                                        <tr class="text-left bg-gray-200">
+                                            <th>Task</th>
+                                            <th>Status</th>
+                                            <th>Category</th>
+                                            <th>Countdown</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <?php while ($task = $tasks->fetch_assoc()): ?>
-                                        <tr>
-                                            <td class="py-2"><?= htmlspecialchars($task['name']) ?></td>
-                                            <td class="py-2"><span class="status-<?= htmlspecialchars($task['status']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['status']) ?></span></td>
-                                            <td class="py-2"><span class="category-<?= htmlspecialchars($task['category']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['category']) ?></span></td>
-                                            <td class="py-2"><?= htmlspecialchars($task['due_date']) ?></td>
-                                            <td class="py-2">
-                                                <button class="text-blue-600">Edit</button>
-                                                <form method="post" action="delete_task.php" style="display:inline">
-                                                    <input type="hidden" name="task_id" value="<?= htmlspecialchars($task['id']) ?>">
-                                                    <button class="text-red-600">Delete</button>
-                                                </form>
-                                            </td>
-                                        </tr>
+                                            <tr class="bg-gray-100 hover:bg-gray-200">
+                                                <td><?= htmlspecialchars($task['name']) ?></td>
+                                                <td><span class="status-<?= htmlspecialchars($task['status']) ?> px-2 py-1 rounded"><?= htmlspecialchars($task['status']) ?></span></td>
+                                                <td><?= htmlspecialchars($task['category']) ?></td>
+                                                <td class="countdown" data-due-date="<?= htmlspecialchars($task['due_date']) ?>"></td>
+                                            </tr>
                                         <?php endwhile; ?>
                                     </tbody>
                                 </table>
-
-                                <!-- Add new task form -->
-                                <br><br>
-                                <form method="post" class="mt-4">
-                                    <input type="text" name="task_name" placeholder="Task name" required class="border rounded px-2 py-1">
-                                    <select name="status" class="border rounded px-2 py-1">
-                                        <option value="Done">Done</option>
-                                        <option value="Not Started Yet">Not started yet</option>
-                                        <option value="Stuck">Stuck</option>
-                                        <option value="Working on it">Working on it</option>
-                                    </select>
-                                    <select name="category" class="border rounded px-2 py-1">
-                                        <option value="Hobby">Hobby</option>
-                                        <option value="Work">Work</option>
-                                        <option value="Finance">Finance</option>
-                                        <option value="Health">Health</option>
-                                    </select>
-                                    <input type="date" name="due_date" required class="border rounded px-2 py-1">
-                                    <button type="submit" name="add_task" class="bg-blue-600 text-white px-4 py-2 rounded">Add Task</button>
-                                </form>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <h3 class="card-title mb-4">Daily Quote</h3>
-                            <h2 class="font-bold" id="dailyQuote"></h2>
-                        </div>
                     </div>
                 </div>
             </main>
         </div>
         <div class="drawer-side">
             <label for="my-drawer" class="drawer-overlay"></label>
-            <ul class="menu p-4 w-80 h-full bg-base-200 text-base-content">
-                <li><a class="text-xl font-bold mb-4">Todora</a></li>
-                <li><a> Home</a></li>
-                <li><a> Project</a></li>
-                <li><a> Calendar</a></li>
-                <li><a> Team Chat</a></li>
-                <li><a>⚙️ Settings</a></li>
+            <ul class="menu p-4 w-50 h-full bg-gray-50 text-gray-800">
+                <li class="mb-4 flex flex-col items-center">
+                    <a class="text-3xl font-bold mb-2 text-gray-800 text-center">Todora</a>
+                    <div class="w-full border-b border-gray-300 mb-4 pointer-events-none"></div>
+                </li>
+                <li><a href='home.php' class="text-gray-600 hover:text-gray-900">Home</a></li>
+                <li><a href='task_page.php' class="text-gray-600 hover:text-gray-900">Task Management</a></li>
+                <li><a href='profile.php' class="text-gray-600 hover:text-gray-900">Profile</a></li>
+                <li><a href='auth/logout.php' class="text-gray-600 hover:text-gray-900">Log Out</a></li>
             </ul>
         </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
+        document.addEventListener('DOMContentLoaded', function () {
+            const taskRows = document.querySelectorAll('#task-list tbody tr');
+            taskRows.forEach(row => {
+                const countdownCell = row.querySelector('.countdown');
+                const dueDateAttr = countdownCell.dataset.dueDate;
+                const status = row.querySelector('span').textContent.trim();
+                const dueDate = new Date(dueDateAttr);
 
-        if (calendarEl) {
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                events: [], // Populate with your event data
+                if (!dueDateAttr || isNaN(dueDate.getTime())) {
+                    countdownCell.textContent = 'No due date';
+                    return;
+                }
+
+                if (status === 'Done') {
+                    countdownCell.textContent = 'Finished';
+                    return;
+                }
+
+                const countdown = setInterval(() => {
+                    const now = new Date();
+                    const timeDiff = dueDate - now;
+
+                    if (timeDiff < 0) {
+                        countdownCell.textContent = 'Overdue';
+                        clearInterval(countdown);
+                    } else {
+                        const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((timeDiff % (1000 * 60)) / (1000 * 60));
+                        countdownCell.textContent = `${hours}h ${minutes}m`;
+                    }
+                }, 1000);
             });
-
-            calendar.render();
-        }
-
-        // Fetch daily quote from the API
-        async function fetchDailyQuote() {
-            try {
-                const response = await fetch('https://api.quotable.io/random');
-                const data = await response.json();
-                document.getElementById('dailyQuote').innerText = `"${data.content}" - ${data.author}`;
-            } catch (error) {
-                console.error('Error fetching daily quote:', error);
-            }
-        }
-
-        fetchDailyQuote();
-    });
+        });
     </script>
 </body>
 </html>
